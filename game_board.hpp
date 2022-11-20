@@ -14,16 +14,16 @@ private:
 
 public:
   game_board();
-  void initialize_();
+  void initialize();
 
   friend std::ostream &operator<<(std::ostream &os, const game_board &board);
 };
 
 game_board::game_board() {
-  initialize_();
+  initialize();
 }
 
-void game_board::initialize_() {
+void game_board::initialize() {
   score_ = 0;
   for (std::size_t i = 0; i < board_.size(); i++) {
     board_[i] = 0;
