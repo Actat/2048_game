@@ -18,13 +18,13 @@ private:
   std::mt19937 engine_;
 
   bool add_random_tile_();
-  int count_blank_tile_();
-  std::vector<int> find_blank_tiles_();
-  bool is_blank_tile_exists_();
 
 public:
   game_board();
+  int count_blank_tile();
+  std::vector<int> find_blank_tiles();
   void initialize();
+  bool is_blank_tile_exists();
 
   friend std::ostream &operator<<(std::ostream &os, const game_board &board);
 };
@@ -36,6 +36,20 @@ game_board::game_board() {
   initialize();
 }
 
+int game_board::count_blank_tile() {
+  return (int)find_blank_tiles().size();
+}
+
+std::vector<int> game_board::find_blank_tiles() {
+  std::vector<int> vec = {};
+  for (size_t i = 0; i < board_.size(); i++) {
+    if (board_.at(i) == 0) {
+      vec.push_back((int)i);
+    }
+  }
+  return vec;
+}
+
 void game_board::initialize() {
   for (std::size_t i = 0; i < board_.size(); i++) {
     board_[i] = 0;
@@ -45,6 +59,10 @@ void game_board::initialize() {
   for (int i = 0; i < START_TILES; i++) {
     add_random_tile_();
   }
+}
+
+bool game_board::is_blank_tile_exists() {
+  return count_blank_tile() > 0;
 }
 
 std::ostream &operator<<(std::ostream &os, const game_board &board) {
@@ -74,7 +92,7 @@ std::ostream &operator<<(std::ostream &os, const game_board &board) {
 // private --------------------------------------------------------------------
 
 bool game_board::add_random_tile_() {
-  auto blanks = find_blank_tiles_();
+  auto blanks = find_blank_tiles();
   if (blanks.size() == 0) {
     return false;
   }
@@ -86,24 +104,6 @@ bool game_board::add_random_tile_() {
   board_.at(blank_tile) = rand(engine_) < 0.9 ? 1 : 2;
 
   return true;
-}
-
-int game_board::count_blank_tile_() {
-  return (int)find_blank_tiles_().size();
-}
-
-std::vector<int> game_board::find_blank_tiles_() {
-  std::vector<int> vec = {};
-  for (size_t i = 0; i < board_.size(); i++) {
-    if (board_.at(i) == 0) {
-      vec.push_back((int)i);
-    }
-  }
-  return vec;
-}
-
-bool game_board::is_blank_tile_exists_() {
-  return count_blank_tile_() > 0;
 }
 
 #endif  // GAME_BOARD_HPP
