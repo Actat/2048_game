@@ -52,7 +52,7 @@ std::vector<int> game_board::find_blank_tiles() {
 
 void game_board::initialize() {
   for (std::size_t i = 0; i < board_.size(); i++) {
-    board_[i] = 0;
+    board_.at(i) = 0;
   }
 
   score_ = 0;
