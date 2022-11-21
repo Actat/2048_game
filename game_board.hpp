@@ -27,7 +27,9 @@ private:
 
 public:
   game_board();
+  game_board(game_board const &board);
   void apply_array(int direction, int index, std::array<int, BOARD_SIZE> array);
+  void copy(game_board const &board);
   bool can_move(int direction);
   bool can_move(std::array<int, BOARD_SIZE> array);
   int count_blank_tile();
@@ -35,13 +37,16 @@ public:
   std::vector<int> find_blank_tiles();
   int get_neighbor_index(int index, int direction);
   void initialize();
+  bool input(int direction);
   bool is_blank_tile_exists();
   bool is_match_available();
   bool is_move_available();
+  bool is_terminated();
   void move(int direction);
   std::tuple<std::array<int, BOARD_SIZE>, int> move(
       std::array<int, BOARD_SIZE> array);
 
+  game_board &operator=(game_board const &board);
   friend std::ostream &operator<<(std::ostream &os, const game_board &board);
 };
 
@@ -50,6 +55,10 @@ game_board::game_board() {
   engine_ = std::mt19937(seed_gen());
 
   initialize();
+}
+
+game_board::game_board(game_board const &board) {
+  copy(board);
 }
 
 void game_board::apply_array(int direction,
@@ -89,6 +98,16 @@ void game_board::apply_array(int direction,
   }
 }
 
+void game_board::copy(game_board const &board) {
+  std::random_device seed_gen;
+  engine_ = std::mt19937(seed_gen());
+
+  score_ = board.score_;
+  for (int i = 0; i < (int)board.board_.size(); i++) {
+    board_.at(i) = board.board_.at(i);
+  }
+}
+
 bool game_board::can_move(int direction) {
   for (int i = 0; i < BOARD_SIZE; i++) {
     if (can_move(fetch_array(direction, i))) {
@@ -99,14 +118,16 @@ bool game_board::can_move(int direction) {
 }
 
 bool game_board::can_move(std::array<int, BOARD_SIZE> array) {
-  for (int i = 0; i < BOARD_SIZE; i++) {
-    if (array.at(i) == 0) {
+  bool is_tile_included = false;
+  for (int i = BOARD_SIZE - 1; i >= 0; i--) {
+    if (array.at(i) == 0 && is_tile_included) {
       return true;
     }
-  }
-  for (int i = 0; i < BOARD_SIZE - 1; i++) {
-    if (array.at(i) == array.at(i + 1)) {
-      return true;
+    if (array.at(i) > 0) {
+      is_tile_included = true;
+      if (i > 0 && array.at(i) == array.at(i - 1)) {
+        return true;
+      }
     }
   }
   return false;
@@ -200,6 +221,18 @@ void game_board::initialize() {
   }
 }
 
+bool game_board::input(int direction) {
+  if (can_move(direction)) {
+    std::cout << "can move" << std::endl;
+
+    move(direction);
+    add_random_tile_();
+    return true;
+  }
+  std::cout << "can not move" << std::endl;
+  return false;
+}
+
 bool game_board::is_blank_tile_exists() {
   return count_blank_tile() > 0;
 }
@@ -219,6 +252,10 @@ bool game_board::is_match_available() {
 
 bool game_board::is_move_available() {
   return is_blank_tile_exists() || is_match_available();
+}
+
+bool game_board::is_terminated() {
+  return !is_move_available();
 }
 
 void game_board::move(int direction) {
@@ -263,6 +300,11 @@ std::tuple<std::array<int, BOARD_SIZE>, int> game_board::move(
   return std::tie(result, score);
 }
 
+game_board &game_board::operator=(game_board const &board) {
+  copy(board);
+  return *this;
+}
+
 std::ostream &operator<<(std::ostream &os, const game_board &board) {
   os << "score: " << board.score_ << std::endl;
   for (int i = 0; i < BOARD_SIZE; i++) {
@@ -295,7 +337,7 @@ bool game_board::add_random_tile_() {
     return false;
   }
 
-  std::uniform_int_distribution<> tile_selector(0.0, (int)blanks.size() - 1);
+  std::uniform_int_distribution<> tile_selector(0, (int)blanks.size() - 1);
   int blank_tile = blanks.at(tile_selector(engine_));
 
   std::uniform_real_distribution<> rand(0.0, 1.0);
