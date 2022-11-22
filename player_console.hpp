@@ -4,25 +4,15 @@
 #include <functional>
 #include <string>
 #include "game_board.hpp"
+#include "player.hpp"
 
-class player_console {
+class player_console : public player {
 private:
-  std::mt19937 engine_;
-
   int get_input(game_board board);
 
 public:
-  std::function<int(game_board)> play;
-
-  player_console();
+  int play(game_board board) override { return get_input(board); };
 };
-
-player_console::player_console() {
-  std::random_device seed_gen;
-  engine_ = std::mt19937(seed_gen());
-
-  play = [this](game_board board) { return this->get_input(board); };
-}
 
 int player_console::get_input(game_board board) {
   int direction;

@@ -11,15 +11,15 @@ private:
   game_board board_;
 
 public:
-  std::tuple<game_board> game(player player);
+  std::tuple<game_board> game(player *player);
 };
 
-std::tuple<game_board> game_master::game(player player) {
+std::tuple<game_board> game_master::game(player *player) {
   board_ = game_board();
   while (!board_.is_terminated()) {
     std::cout << board_ << std::endl;
     game_board b = board_;
-    board_.input(player.play(b));
+    board_.input(player->play(b));
   }
   std::cout << "game terminated" << std::endl;
   return std::make_tuple(board_);
