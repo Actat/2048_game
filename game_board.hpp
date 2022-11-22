@@ -4,6 +4,7 @@
 #include <array>
 #include <cmath>
 #include <iomanip>
+#include <iostream>
 #include <queue>
 #include <random>
 #include <tuple>
