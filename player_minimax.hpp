@@ -8,12 +8,22 @@
 class player_minimax : public player {
 private:
   int evaluate_(game_board board);
+  int alphabeta_(game_board board, int depth);
+  int alphabeta_recursion_move_(game_board board,
+                                int depth,
+                                int alpha,
+                                int beta);
+  int alphabeta_recursion_add_(game_board board,
+                               int depth,
+                               int alpha,
+                               int beta);
   int minimax_(game_board board, int depth);
   int minimax_recursion_move_(game_board board, int depth);
   int minimax_recursion_add_(game_board board, int depth);
 
 public:
-  virtual int play(game_board board) { return minimax_(board, 2); };
+  // virtual int play(game_board board) { return minimax_(board, 2); };
+  virtual int play(game_board board) { return alphabeta_(board, 2); };
 };
 
 int player_minimax::evaluate_(game_board board) {
@@ -26,6 +36,74 @@ int player_minimax::evaluate_(game_board board) {
   evaluate_score += board.get_largest_tile();
 
   return evaluate_score;
+}
+
+int player_minimax::alphabeta_(game_board board, int depth) {
+  int best_direction      = -1;
+  int best_evaluate_score = std::numeric_limits<int>::min();
+  for (int direction = 0; direction < 4; direction++) {
+    if (board.can_move(direction)) {
+      game_board b = board;
+      b.move(direction);
+      int evaluate_score =
+          alphabeta_recursion_add_(b, depth, std::numeric_limits<int>::min(),
+                                   std::numeric_limits<int>::max());
+      if (evaluate_score > best_evaluate_score) {
+        best_direction = direction;
+      }
+    }
+  }
+  return best_direction;
+}
+
+int player_minimax::alphabeta_recursion_move_(game_board board,
+                                              int depth,
+                                              int alpha,
+                                              int beta) {
+  if (depth == 0 || board.is_terminated()) {
+    return evaluate_(board);
+  }
+
+  for (int direction = 0; direction < 4; direction++) {
+    if (board.can_move(direction)) {
+      game_board b = board;
+      b.move(direction);
+      int evaluate_score = alphabeta_recursion_add_(b, depth, alpha, beta);
+      alpha              = std::max(alpha, evaluate_score);
+      if (alpha >= beta) {
+        return alpha;
+      }
+    }
+  }
+  return alpha;
+}
+
+int player_minimax::alphabeta_recursion_add_(game_board board,
+                                             int depth,
+                                             int alpha,
+                                             int beta) {
+  for (int position = 0; position < BOARD_SIZE * BOARD_SIZE; position++) {
+    if (board.is_blank(position)) {
+      game_board b1 = board;
+      b1.add_tile(position, 1);
+      int evaluate_score1 =
+          alphabeta_recursion_move_(b1, depth - 1, alpha, beta);
+      beta = std::min(beta, evaluate_score1);
+      if (alpha >= beta) {
+        return beta;
+      }
+
+      game_board b2 = board;
+      b2.add_tile(position, 2);
+      int evaluate_score2 =
+          alphabeta_recursion_move_(b2, depth - 1, alpha, beta);
+      beta = std::min(beta, evaluate_score2);
+      if (alpha >= beta) {
+        return beta;
+      }
+    }
+  }
+  return beta;
 }
 
 int player_minimax::minimax_(game_board board, int depth) {
