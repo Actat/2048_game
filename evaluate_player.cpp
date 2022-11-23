@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     auto p = player_minimax();
 
     game_board board;
-    std::tie(board) = m.game(&p, false);
+    std::tie(board) = m.game(&p, true);
 
     std::cout << "trial: " << i << "/" << NUM_TRIAL << "("
               << 100.0 * (i + 1) / NUM_TRIAL << " %)" << std::endl;
