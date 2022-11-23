@@ -12,16 +12,25 @@ private:
 
 public:
   std::tuple<game_board> game(player *player);
+  std::tuple<game_board> game(player *player, bool show_progress);
 };
 
 std::tuple<game_board> game_master::game(player *player) {
+  return game(player, true);
+}
+
+std::tuple<game_board> game_master::game(player *player, bool show_progress) {
   board_ = game_board();
   while (!board_.is_terminated()) {
-    std::cout << board_ << std::endl;
+    if (show_progress) {
+      std::cout << board_ << std::endl;
+    }
     game_board b = board_;
     board_.input(player->play(b));
   }
-  std::cout << "game terminated" << std::endl;
+  if (show_progress) {
+    std::cout << "game terminated" << std::endl;
+  }
   return std::make_tuple(board_);
 }
 
