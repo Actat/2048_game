@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     auto p = player_random();
 
     game_board board;
-    std::tie(board) = m.game(&p);
+    std::tie(board) = m.game(&p, false);
     std::cout << board << std::endl;
 
     result.at(i) = board;
