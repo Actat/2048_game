@@ -1,6 +1,7 @@
 #ifndef GAME_BOARD_HPP
 #define GAME_BOARD_HPP
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <iomanip>
@@ -35,7 +36,10 @@ public:
   int count_blank_tile();
   std::array<int, BOARD_SIZE> fetch_array(int direction, int index);
   std::vector<int> find_blank_tiles();
+  std::array<int, BOARD_SIZE * BOARD_SIZE> get_board();
+  int get_largest_tile();
   int get_neighbor_index(int index, int direction);
+  int get_score();
   void initialize();
   bool input(int direction);
   bool is_blank_tile_exists();
@@ -187,6 +191,15 @@ std::vector<int> game_board::find_blank_tiles() {
   return vec;
 }
 
+std::array<int, BOARD_SIZE * BOARD_SIZE> game_board::get_board() {
+  std::array<int, BOARD_SIZE *BOARD_SIZE> b = board_;
+  return b;
+}
+
+int game_board::get_largest_tile() {
+  return *std::max_element(board_.begin(), board_.end());
+}
+
 int game_board::get_neighbor_index(int index, int direction) {
   switch (direction) {
     case DIRECTION_L:
@@ -208,6 +221,10 @@ int game_board::get_neighbor_index(int index, int direction) {
       return -1;
       break;
   }
+}
+
+int game_board::get_score() {
+  return score_;
 }
 
 void game_board::initialize() {
