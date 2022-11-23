@@ -4,7 +4,6 @@
 #include <array>
 #include <cmath>
 #include <iomanip>
-#include <iostream>
 #include <queue>
 #include <random>
 #include <tuple>
@@ -224,13 +223,10 @@ void game_board::initialize() {
 
 bool game_board::input(int direction) {
   if (can_move(direction)) {
-    std::cout << "can move" << std::endl;
-
     move(direction);
     add_random_tile_();
     return true;
   }
-  std::cout << "can not move" << std::endl;
   return false;
 }
 
