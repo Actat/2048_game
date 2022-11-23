@@ -1,10 +1,10 @@
 #ifndef GAME_BOARD_HPP
 #define GAME_BOARD_HPP
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <iomanip>
-#include <iostream>
 #include <queue>
 #include <random>
 #include <tuple>
@@ -36,7 +36,10 @@ public:
   int count_blank_tile();
   std::array<int, BOARD_SIZE> fetch_array(int direction, int index);
   std::vector<int> find_blank_tiles();
+  std::array<int, BOARD_SIZE * BOARD_SIZE> get_board();
+  int get_largest_tile();
   int get_neighbor_index(int index, int direction);
+  int get_score();
   void initialize();
   bool input(int direction);
   bool is_blank_tile_exists();
@@ -188,6 +191,15 @@ std::vector<int> game_board::find_blank_tiles() {
   return vec;
 }
 
+std::array<int, BOARD_SIZE * BOARD_SIZE> game_board::get_board() {
+  std::array<int, BOARD_SIZE *BOARD_SIZE> b = board_;
+  return b;
+}
+
+int game_board::get_largest_tile() {
+  return *std::max_element(board_.begin(), board_.end());
+}
+
 int game_board::get_neighbor_index(int index, int direction) {
   switch (direction) {
     case DIRECTION_L:
@@ -211,6 +223,10 @@ int game_board::get_neighbor_index(int index, int direction) {
   }
 }
 
+int game_board::get_score() {
+  return score_;
+}
+
 void game_board::initialize() {
   for (std::size_t i = 0; i < board_.size(); i++) {
     board_.at(i) = 0;
@@ -224,13 +240,10 @@ void game_board::initialize() {
 
 bool game_board::input(int direction) {
   if (can_move(direction)) {
-    std::cout << "can move" << std::endl;
-
     move(direction);
     add_random_tile_();
     return true;
   }
-  std::cout << "can not move" << std::endl;
   return false;
 }
 
