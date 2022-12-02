@@ -29,6 +29,7 @@ private:
 public:
   game_board();
   game_board(game_board const &board);
+  bool add_tile(int position, int tile);
   void apply_array(int direction, int index, std::array<int, BOARD_SIZE> array);
   void copy(game_board const &board);
   bool can_move(int direction);
@@ -42,6 +43,7 @@ public:
   int get_score();
   void initialize();
   bool input(int direction);
+  bool is_blank(int position);
   bool is_blank_tile_exists();
   bool is_match_available();
   bool is_move_available();
@@ -63,6 +65,17 @@ game_board::game_board() {
 
 game_board::game_board(game_board const &board) {
   copy(board);
+}
+
+bool game_board::add_tile(int position, int tile) {
+  if (position < 0 || position > BOARD_SIZE * BOARD_SIZE) {
+    return false;
+  }
+  if (tile != 1 && tile != 2) {
+    return false;
+  }
+  board_.at(position) = tile;
+  return true;
 }
 
 void game_board::apply_array(int direction,
@@ -245,6 +258,10 @@ bool game_board::input(int direction) {
     return true;
   }
   return false;
+}
+
+bool game_board::is_blank(int position) {
+  return board_.at(position) == 0;
 }
 
 bool game_board::is_blank_tile_exists() {
