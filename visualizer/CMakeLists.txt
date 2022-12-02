@@ -11,14 +11,14 @@ endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-add_executable(visualizer
+add_executable(visualizer.out
   Main.cpp
   )
 
 find_package(Siv3D)
-target_link_libraries(visualizer PUBLIC Siv3D::Siv3D)
+target_link_libraries(visualizer.out PUBLIC Siv3D::Siv3D)
 
-target_compile_features(visualizer PRIVATE cxx_std_20)
+target_compile_features(visualizer.out PRIVATE cxx_std_20)
 
 if(BUILD_TESTING)
 enable_testing()
