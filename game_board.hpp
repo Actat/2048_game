@@ -21,6 +21,7 @@ class game_board {
 private:
   std::array<int, BOARD_SIZE * BOARD_SIZE> board_;
   int score_;
+  int turn_;
 
   std::mt19937 engine_;
 
@@ -41,6 +42,7 @@ public:
   int get_largest_tile();
   int get_neighbor_index(int index, int direction);
   int get_score();
+  int get_turn();
   void initialize();
   bool input(int direction);
   bool is_blank(int position);
@@ -120,6 +122,7 @@ void game_board::copy(game_board const &board) {
   engine_ = std::mt19937(seed_gen());
 
   score_ = board.score_;
+  turn_  = board.turn_;
   for (int i = 0; i < (int)board.board_.size(); i++) {
     board_.at(i) = board.board_.at(i);
   }
@@ -196,7 +199,7 @@ std::array<int, BOARD_SIZE> game_board::fetch_array(int direction, int index) {
 
 std::vector<int> game_board::find_blank_tiles() {
   std::vector<int> vec = {};
-  for (size_t i = 0; i < board_.size(); i++) {
+  for (std::size_t i = 0; i < board_.size(); i++) {
     if (board_.at(i) == 0) {
       vec.push_back((int)i);
     }
@@ -239,6 +242,9 @@ int game_board::get_neighbor_index(int index, int direction) {
 int game_board::get_score() {
   return score_;
 }
+int game_board::get_turn() {
+  return turn_;
+}
 
 void game_board::initialize() {
   for (std::size_t i = 0; i < board_.size(); i++) {
@@ -246,6 +252,7 @@ void game_board::initialize() {
   }
 
   score_ = 0;
+  turn_  = 0;
   for (int i = 0; i < START_TILES; i++) {
     add_random_tile_();
   }
@@ -255,6 +262,7 @@ bool game_board::input(int direction) {
   if (can_move(direction)) {
     move(direction);
     add_random_tile_();
+    turn_++;
     return true;
   }
   return false;
