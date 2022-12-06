@@ -12,18 +12,15 @@ void Main() {
   int scene_h    = Scene::Height();
   int scene_size = scene_h < scene_w ? scene_h : scene_w;
 
-  v.draw_board(b, scene_size, (scene_w - scene_size) / 2,
-               (scene_h - scene_size) / 2);
+  v.draw(b, 0, 0, scene_w, scene_h);
 
   while (System::Update() && !b.is_terminated()) {
     int input = p.play(b);
     b.input(input);
-    v.draw_board(b, scene_size, (scene_w - scene_size) / 2,
-                 (scene_h - scene_size) / 2);
+    v.draw(b, 0, 0, scene_w, scene_h);
   }
 
   while (System::Update()) {
-    v.draw_board(b, scene_size, (scene_w - scene_size) / 2,
-                 (scene_h - scene_size) / 2);
+    v.draw(b, 0, 0, scene_w, scene_h);
   }
 }

@@ -28,19 +28,40 @@ private:
 
 public:
   visualizer();
-  void draw_board(game_board b, int size, int pos_x, int pos_y);
+  void draw(game_board b, int pos_x, int pos_y, int size_x, int size_y);
+  void draw_board(game_board b, int pos_x, int pos_y, int size);
+  void draw_info(game_board b, int pos_x, int pos_y, int size_x, int size_y);
 };
 
 visualizer::visualizer() {}
 
-void visualizer::draw_board(game_board b, int size, int pos_x, int pos_y) {
-  Rect{pos_x, pos_y, size, size}.draw();
+void visualizer::draw(game_board b,
+                      int pos_x,
+                      int pos_y,
+                      int size_x,
+                      int size_y) {
+  Rect{pos_x, pos_y, size_x, size_y}.draw(COLOR_2);
+  if (size_x > size_y) {
+    int pading_size = size_x * 0.05;
+    int board_size  = size_y - 2 * pading_size;
+    draw_board(b, pos_x + pading_size, pos_y + (size_y - board_size) / 2,
+               board_size);
+    draw_info(b, pos_x + 2 * pading_size + board_size, pos_y + pading_size,
+              size_x - 3 * pading_size - board_size, size_y - 2 * pading_size);
+  }
+}
+
+void visualizer::draw_board(game_board b, int pos_x, int pos_y, int size) {
+  Rect{pos_x, pos_y, size, size}.draw(COLOR_BG);
+  int border_width = size * 5 / 100 / (BOARD_SIZE);
+  int tile_size    = (size - border_width * (BOARD_SIZE + 1)) / BOARD_SIZE;
+
   for (int i = 0; i < BOARD_SIZE; i++) {
     for (int j = 0; j < BOARD_SIZE; j++) {
-      Rect r{pos_x + size * j / BOARD_SIZE, pos_y + size * i / BOARD_SIZE,
-             size / BOARD_SIZE, size / BOARD_SIZE};
-      Vec2 pos{pos_x + size * j / BOARD_SIZE + size / 2 / BOARD_SIZE,
-               pos_y + size * i / BOARD_SIZE + size / 2 / BOARD_SIZE};
+      int rect_pos_x = pos_x + border_width + (tile_size + border_width) * j;
+      int rect_pos_y = pos_y + border_width + (tile_size + border_width) * i;
+      Rect r{rect_pos_x, rect_pos_y, tile_size, tile_size};
+      Vec2 pos{rect_pos_x + tile_size / 2, rect_pos_y + tile_size / 2};
       int value = b.get_board().at(BOARD_SIZE * i + j);
       String text{Unicode::Widen(std::to_string((int)std::pow(2, value)))};
       switch (value) {
@@ -108,9 +129,42 @@ void visualizer::draw_board(game_board b, int size, int pos_x, int pos_y) {
           FONT_L(text).drawAt(pos, COLOR_VALUE_L);
           break;
       }
-      r.drawFrame(3, 3, COLOR_BG);
     }
   }
 };
 
+void visualizer::draw_info(game_board b,
+                           int pos_x,
+                           int pos_y,
+                           int size_x,
+                           int size_y) {
+  int turn_pos_x, turn_pos_y, turn_size_x, turn_size_y;
+  int score_pos_x, score_pos_y, score_size_x, score_size_y;
+  Rect turn;
+  Rect score;
+  if (size_x < size_y) {
+    turn_pos_x   = pos_x;
+    turn_pos_y   = pos_y;
+    turn_size_x  = size_x;
+    turn_size_y  = 60;
+    score_pos_x  = pos_x;
+    score_pos_y  = turn_pos_y + turn_size_y + size_y * 5 / 100;
+    score_size_x = size_x;
+    score_size_y = 60;
+    turn         = Rect{turn_pos_x, turn_pos_y, turn_size_x, turn_size_y};
+    score        = Rect{score_pos_x, score_pos_y, score_size_x, score_size_y};
+  }
+  turn.draw(COLOR_BG);
+  score.draw(COLOR_BG);
+  FONT_L(U"Turn").drawAt(turn_pos_x + turn_size_x / 2,
+                         turn_pos_y + turn_size_y / 4, COLOR_VALUE_L);
+  FONT_L(String{Unicode::Widen(std::to_string(b.get_turn()))})
+      .drawAt(turn_pos_x + turn_size_x / 2, turn_pos_y + turn_size_y * 3 / 4,
+              COLOR_VALUE_L);
+  FONT_L(U"Score").drawAt(score_pos_x + score_size_x / 2,
+                          score_pos_y + score_size_y / 4, COLOR_VALUE_L);
+  FONT_L(String{Unicode::Widen(std::to_string(b.get_score()))})
+      .drawAt(score_pos_x + score_size_x / 2,
+              score_pos_y + score_size_y * 3 / 4, COLOR_VALUE_L);
+}
 #endif  // VISUALIZER_HPP
