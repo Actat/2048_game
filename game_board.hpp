@@ -199,7 +199,7 @@ std::array<int, BOARD_SIZE> game_board::fetch_array(int direction, int index) {
 
 std::vector<int> game_board::find_blank_tiles() {
   std::vector<int> vec = {};
-  for (size_t i = 0; i < board_.size(); i++) {
+  for (std::size_t i = 0; i < board_.size(); i++) {
     if (board_.at(i) == 0) {
       vec.push_back((int)i);
     }
