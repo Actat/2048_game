@@ -1,12 +1,47 @@
 #ifndef PLAYER_MINIMAX_HPP
 #define PLAYER_MINIMAX_HPP
 
+#include <chrono>
 #include <limits>
+#include <unordered_map>
 #include "game_board.hpp"
 #include "player.hpp"
 
+class time_keeper {
+private:
+  std::chrono::high_resolution_clock::time_point start_time_;
+  int time_limit_ms_;
+
+public:
+  time_keeper(int time_limit_ms) {
+    start_time_    = std::chrono::high_resolution_clock::now();
+    time_limit_ms_ = time_limit_ms;
+  }
+
+  bool is_time_over() {
+    auto duration = std::chrono::high_resolution_clock::now() - start_time_;
+    return std::chrono::duration_cast<std::chrono::milliseconds>(duration)
+               .count() >= time_limit_ms_;
+  }
+};
+
+class hash_board {
+public:
+  size_t operator()(game_board b) const {
+    const int C                                   = 97;
+    size_t t                                      = 0;
+    std::array<int, BOARD_SIZE *BOARD_SIZE> array = b.get_board();
+    for (int i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
+      t = t * C + array.at(i);
+    }
+    return t;
+  }
+};
+
 class player_minimax : public player {
 private:
+  std::unordered_map<game_board, int, hash_board> evaluation_cache;
+
   int evaluate_(game_board board);
   int alphabeta_(game_board board, int depth);
   int alphabeta_recursion_move_(game_board board,
