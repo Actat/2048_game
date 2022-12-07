@@ -52,13 +52,28 @@ private:
                                int depth,
                                int alpha,
                                int beta);
+  int iterative_deeping_(game_board board, int time_limit_ms);
+  int iterative_deeping_alphabeta_(game_board board,
+                                   int depth,
+                                   time_keeper *tk);
+  int iterative_deeping_alphabeta_move_(game_board board,
+                                        int depth,
+                                        int alpha,
+                                        int beta,
+                                        time_keeper *tk);
+  int iterative_deeping_alphabeta_add_(game_board board,
+                                       int depth,
+                                       int alpha,
+                                       int beta,
+                                       time_keeper *tk);
   int minimax_(game_board board, int depth);
   int minimax_recursion_move_(game_board board, int depth);
   int minimax_recursion_add_(game_board board, int depth);
 
 public:
   // virtual int play(game_board board) { return minimax_(board, 2); };
-  virtual int play(game_board board) { return alphabeta_(board, 2); };
+  // virtual int play(game_board board) { return alphabeta_(board, 2); };
+  virtual int play(game_board board) { return iterative_deeping_(board, 500); };
 };
 
 int player_minimax::evaluate_(game_board board) {
@@ -132,6 +147,123 @@ int player_minimax::alphabeta_recursion_add_(game_board board,
       b2.add_tile(position, 2);
       int evaluate_score2 =
           alphabeta_recursion_move_(b2, depth - 1, alpha, beta);
+      beta = std::min(beta, evaluate_score2);
+      if (alpha >= beta) {
+        return beta;
+      }
+    }
+  }
+  return beta;
+}
+
+int player_minimax::iterative_deeping_(game_board board, int time_limit_ms) {
+  auto tk            = time_keeper(time_limit_ms);
+  int best_direction = -1;
+  for (int depth = 1;; depth++) {
+    int dir = iterative_deeping_alphabeta_(board, depth, &tk);
+
+    if (tk.is_time_over()) {
+      break;
+    }
+
+    best_direction = dir;
+  }
+
+  return best_direction;
+}
+
+int player_minimax::iterative_deeping_alphabeta_(game_board board,
+                                                 int depth,
+                                                 time_keeper *tk) {
+  int best_direction      = -1;
+  int best_evaluate_score = std::numeric_limits<int>::min();
+  for (int direction = 0; direction < 4; direction++) {
+    if (board.can_move(direction)) {
+      game_board b = board;
+      b.move(direction);
+      int evaluate_score = iterative_deeping_alphabeta_add_(
+          b, depth, std::numeric_limits<int>::min(),
+          std::numeric_limits<int>::max(), tk);
+
+      if (tk->is_time_over()) {
+        return best_direction;
+      }
+
+      if (evaluate_score > best_evaluate_score) {
+        best_direction = direction;
+      }
+    }
+  }
+  return best_direction;
+}
+
+int player_minimax::iterative_deeping_alphabeta_move_(game_board board,
+                                                      int depth,
+                                                      int alpha,
+                                                      int beta,
+                                                      time_keeper *tk) {
+  if (tk->is_time_over()) {
+    return alpha;
+  }
+
+  if (depth == 0 || board.is_terminated()) {
+    return evaluate_(board);
+  }
+
+  for (int direction = 0; direction < 4; direction++) {
+    if (board.can_move(direction)) {
+      game_board b = board;
+      b.move(direction);
+      int evaluate_score =
+          iterative_deeping_alphabeta_add_(b, depth, alpha, beta, tk);
+
+      if (tk->is_time_over()) {
+        return alpha;
+      }
+
+      alpha = std::max(alpha, evaluate_score);
+      if (alpha >= beta) {
+        return alpha;
+      }
+    }
+  }
+  return alpha;
+}
+
+int player_minimax::iterative_deeping_alphabeta_add_(game_board board,
+                                                     int depth,
+                                                     int alpha,
+                                                     int beta,
+                                                     time_keeper *tk) {
+  if (tk->is_time_over()) {
+    return beta;
+  }
+
+  for (int position = 0; position < BOARD_SIZE * BOARD_SIZE; position++) {
+    if (board.is_blank(position)) {
+      game_board b1 = board;
+      b1.add_tile(position, 1);
+      int evaluate_score1 =
+          iterative_deeping_alphabeta_move_(b1, depth - 1, alpha, beta, tk);
+
+      if (tk->is_time_over()) {
+        return beta;
+      }
+
+      beta = std::min(beta, evaluate_score1);
+      if (alpha >= beta) {
+        return beta;
+      }
+
+      game_board b2 = board;
+      b2.add_tile(position, 2);
+      int evaluate_score2 =
+          iterative_deeping_alphabeta_move_(b2, depth - 1, alpha, beta, tk);
+
+      if (tk->is_time_over()) {
+        return beta;
+      }
+
       beta = std::min(beta, evaluate_score2);
       if (alpha >= beta) {
         return beta;
