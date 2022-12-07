@@ -2,6 +2,7 @@
 #define PLAYER_MINIMAX_HPP
 
 #include <chrono>
+#include <iostream>
 #include <limits>
 #include <unordered_map>
 #include "game_board.hpp"
@@ -163,6 +164,7 @@ int player_minimax::iterative_deeping_(game_board board, int time_limit_ms) {
     int dir = iterative_deeping_alphabeta_(board, depth, &tk);
 
     if (tk.is_time_over()) {
+      std::cout << "depth: " << depth - 1 << std::endl;
       break;
     }
 
