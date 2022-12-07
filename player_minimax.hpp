@@ -1,6 +1,7 @@
 #ifndef PLAYER_MINIMAX_HPP
 #define PLAYER_MINIMAX_HPP
 
+#include <array>
 #include <chrono>
 #include <iostream>
 #include <limits>
@@ -26,14 +27,13 @@ public:
   }
 };
 
-class hash_board {
+class hash_board_array {
 public:
-  size_t operator()(game_board b) const {
-    const int C                                   = 97;
-    size_t t                                      = 0;
-    std::array<int, BOARD_SIZE *BOARD_SIZE> array = b.get_board();
+  size_t operator()(std::array<int, BOARD_SIZE * BOARD_SIZE> const arr) const {
+    const int C = 97;
+    size_t t    = 0;
     for (int i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
-      t = t * C + array.at(i);
+      t = t * C + arr.at(i);
     }
     return t;
   }
@@ -41,7 +41,10 @@ public:
 
 class player_minimax : public player {
 private:
-  std::unordered_map<game_board, int, hash_board> evaluation_cache;
+  std::unordered_map<std::array<int, BOARD_SIZE * BOARD_SIZE>,
+                     int,
+                     hash_board_array>
+      evaluation_cache;
 
   int evaluate_(game_board board);
   int alphabeta_(game_board board, int depth);
@@ -79,6 +82,33 @@ public:
 
 int player_minimax::evaluate_(game_board board) {
   int evaluate_score = 0;
+
+  try {
+    evaluate_score += evaluation_cache.at(board.get_board());
+  } catch (std::out_of_range &) {
+    int evaluate_array = 0;
+
+    auto eval_array = [](std::array<int, BOARD_SIZE> arr) {
+      int eval = 0;
+      for (int i = 0; i < BOARD_SIZE - 1; i++) {
+        if (arr[i] != 0 && arr[i + 1] != 0) {
+          eval -= std::abs(arr[i] - arr[i + 1]);
+        }
+      }
+      return eval;
+    };
+    for (int i = 0; i < BOARD_SIZE; i++) {
+      std::array<int, BOARD_SIZE> a1 = board.fetch_array(DIRECTION_D, i);
+      std::array<int, BOARD_SIZE> a2 = board.fetch_array(DIRECTION_L, i);
+      evaluate_array += eval_array(a1);
+      evaluate_array += eval_array(a2);
+    }
+
+    evaluation_cache.insert(
+        std::pair<std::array<int, BOARD_SIZE * BOARD_SIZE>, int>{
+            board.get_board(), evaluate_array});
+    evaluate_score += evaluate_array;
+  }
 
   if (board.is_terminated()) {
     evaluate_score -= 65536;
@@ -164,7 +194,8 @@ int player_minimax::iterative_deeping_(game_board board, int time_limit_ms) {
     int dir = iterative_deeping_alphabeta_(board, depth, &tk);
 
     if (tk.is_time_over()) {
-      std::cout << "depth: " << depth - 1 << std::endl;
+      std::cout << "direction: " << best_direction  //
+                << ", depth: " << depth - 1 << std::endl;
       break;
     }
 
