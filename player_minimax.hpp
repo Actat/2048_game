@@ -195,12 +195,14 @@ int player_minimax::iterative_deeping_(game_board board, int time_limit_ms) {
     int dir = iterative_deeping_alphabeta_(board, depth, &tk);
 
     if (tk.is_time_over()) {
-      std::cout << "direction: " << best_direction  //
-                << ", depth: " << depth - 1 << std::endl;
+      std::cout << "Time is up. depth: " << depth - 1  //
+                << ", direction: " << best_direction << std::endl;
       break;
     }
 
     best_direction = dir;
+    std::cout << "depth: " << depth
+              << " completed. best_direction: " << best_direction << std::endl;
   }
 
   return best_direction;
@@ -222,6 +224,9 @@ int player_minimax::iterative_deeping_alphabeta_(game_board board,
       if (tk->is_time_over()) {
         return best_direction;
       }
+
+      std::cout << "depth: " << depth << " dir: " << direction
+                << " score: " << evaluate_score << std::endl;
 
       if (evaluate_score > best_evaluate_score) {
         best_direction      = direction;
