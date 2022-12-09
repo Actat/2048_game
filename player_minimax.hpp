@@ -241,6 +241,8 @@ int player_minimax::iterative_deeping_alphabeta_move_(game_board board,
     return alpha;
   }
 
+  int a;
+
   if (depth == 0 || board.is_terminated()) {
     return evaluate_(board);
   }
@@ -256,13 +258,13 @@ int player_minimax::iterative_deeping_alphabeta_move_(game_board board,
         return alpha;
       }
 
-      alpha = std::max(alpha, evaluate_score);
-      if (alpha >= beta) {
-        return alpha;
+      a = std::max(alpha, evaluate_score);
+      if (a >= beta) {
+        return a;
       }
     }
   }
-  return alpha;
+  return a;
 }
 
 int player_minimax::iterative_deeping_alphabeta_add_(game_board board,
@@ -273,6 +275,8 @@ int player_minimax::iterative_deeping_alphabeta_add_(game_board board,
   if (tk->is_time_over()) {
     return beta;
   }
+
+  int b;
 
   for (int position = 0; position < BOARD_SIZE * BOARD_SIZE; position++) {
     if (board.is_blank(position)) {
@@ -285,9 +289,9 @@ int player_minimax::iterative_deeping_alphabeta_add_(game_board board,
         return beta;
       }
 
-      beta = std::min(beta, evaluate_score1);
-      if (alpha >= beta) {
-        return beta;
+      b = std::min(beta, evaluate_score1);
+      if (alpha >= b) {
+        return b;
       }
 
       game_board b2 = board;
@@ -299,13 +303,13 @@ int player_minimax::iterative_deeping_alphabeta_add_(game_board board,
         return beta;
       }
 
-      beta = std::min(beta, evaluate_score2);
-      if (alpha >= beta) {
-        return beta;
+      b = std::min(beta, evaluate_score2);
+      if (alpha >= b) {
+        return b;
       }
     }
   }
-  return beta;
+  return b;
 }
 
 int player_minimax::minimax_(game_board board, int depth) {
