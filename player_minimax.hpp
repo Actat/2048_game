@@ -91,10 +91,30 @@ int player_minimax::evaluate_(game_board board) {
     auto eval_array = [](std::array<int, BOARD_SIZE> arr) {
       int eval = 0;
       for (int i = 0; i < BOARD_SIZE - 1; i++) {
-        if (arr[i] != 0 && arr[i + 1] != 0) {
+        if (true || (arr[i] != 0 && arr[i + 1] != 0)) {
           eval -= std::abs(arr[i] - arr[i + 1]);
         }
       }
+
+      for (int i = 0; i < BOARD_SIZE; i++) {
+        if (arr[i] == 0) {
+          eval += 50;
+        }
+      }
+
+      int trend_p = 0;
+      int trend_n = 0;
+      for (int i = 0; i < BOARD_SIZE - 1; i++) {
+        if (arr[i] <= arr[i + 1]) {
+          trend_p++;
+        } else if (arr[i] >= arr[i + 1]) {
+          trend_n++;
+        }
+      }
+      if (trend_p == BOARD_SIZE - 1 || trend_n == BOARD_SIZE - 1) {
+        eval += 30000;
+      }
+
       return eval;
     };
     for (int i = 0; i < BOARD_SIZE; i++) {
