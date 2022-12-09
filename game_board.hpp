@@ -9,13 +9,7 @@
 #include <random>
 #include <tuple>
 #include <vector>
-
-#define BOARD_SIZE 4
-#define START_TILES 2
-#define DIRECTION_L 0
-#define DIRECTION_D 1
-#define DIRECTION_U 2
-#define DIRECTION_R 3
+#include "game_constants.hpp"
 
 class game_board {
 private:
