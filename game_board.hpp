@@ -17,10 +17,6 @@ private:
   int score_;
   int turn_;
 
-  std::mt19937 engine_;
-
-  bool add_random_tile_();
-
 public:
   game_board();
   game_board(game_board const &board);
@@ -38,7 +34,6 @@ public:
   int get_score();
   int get_turn();
   void initialize();
-  bool input(int direction);
   bool is_blank(int position);
   bool is_blank_tile_exists();
   bool is_match_available();
@@ -53,9 +48,6 @@ public:
 };
 
 game_board::game_board() {
-  std::random_device seed_gen;
-  engine_ = std::mt19937(seed_gen());
-
   initialize();
 }
 
@@ -112,9 +104,6 @@ void game_board::apply_array(int direction,
 }
 
 void game_board::copy(game_board const &board) {
-  std::random_device seed_gen;
-  engine_ = std::mt19937(seed_gen());
-
   score_ = board.score_;
   turn_  = board.turn_;
   for (int i = 0; i < (int)board.board_.size(); i++) {
@@ -241,25 +230,9 @@ int game_board::get_turn() {
 }
 
 void game_board::initialize() {
-  for (std::size_t i = 0; i < board_.size(); i++) {
-    board_.at(i) = 0;
-  }
-
+  board_.fill(0);
   score_ = 0;
   turn_  = 0;
-  for (int i = 0; i < START_TILES; i++) {
-    add_random_tile_();
-  }
-}
-
-bool game_board::input(int direction) {
-  if (can_move(direction)) {
-    move(direction);
-    add_random_tile_();
-    turn_++;
-    return true;
-  }
-  return false;
 }
 
 bool game_board::is_blank(int position) {
@@ -298,6 +271,7 @@ void game_board::move(int direction) {
     auto score = std::get<1>(moved);
     apply_array(direction, index, array);
     score_ += score;
+    turn_++;
   }
 }
 
@@ -360,23 +334,6 @@ std::ostream &operator<<(std::ostream &os, const game_board &board) {
   }
   os << "+" << std::endl;
   return os;
-}
-
-// private --------------------------------------------------------------------
-
-bool game_board::add_random_tile_() {
-  auto blanks = find_blank_tiles();
-  if (blanks.size() == 0) {
-    return false;
-  }
-
-  std::uniform_int_distribution<> tile_selector(0, (int)blanks.size() - 1);
-  int blank_tile = blanks.at(tile_selector(engine_));
-
-  std::uniform_real_distribution<> rand(0.0, 1.0);
-  board_.at(blank_tile) = rand(engine_) < 0.9 ? 1 : 2;
-
-  return true;
 }
 
 #endif  // GAME_BOARD_HPP
