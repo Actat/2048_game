@@ -130,7 +130,8 @@ int player_minimax::alphabeta_(game_board board, int depth) {
           alphabeta_recursion_add_(b, depth, std::numeric_limits<int>::min(),
                                    std::numeric_limits<int>::max());
       if (evaluate_score > best_evaluate_score) {
-        best_direction = direction;
+        best_direction      = direction;
+        best_evaluate_score = evaluate_score;
       }
     }
   }
@@ -223,7 +224,8 @@ int player_minimax::iterative_deeping_alphabeta_(game_board board,
       }
 
       if (evaluate_score > best_evaluate_score) {
-        best_direction = direction;
+        best_direction      = direction;
+        best_evaluate_score = evaluate_score;
       }
     }
   }
@@ -315,7 +317,8 @@ int player_minimax::minimax_(game_board board, int depth) {
       b.move(direction);
       int evaluate_score = minimax_recursion_add_(b, depth);
       if (evaluate_score > best_evaluate_score) {
-        best_direction = direction;
+        best_direction      = direction;
+        best_evaluate_score = evaluate_score;
       }
     }
   }
