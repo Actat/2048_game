@@ -1,6 +1,7 @@
 #ifndef PLAYER_CONSOLE_HPP
 #define PLAYER_CONSOLE_HPP
 
+#include <iostream>
 #include <string>
 #include "game_board.hpp"
 #include "player.hpp"
