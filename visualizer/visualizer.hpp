@@ -62,7 +62,7 @@ void visualizer::draw_board(game_board b, int pos_x, int pos_y, int size) {
       int rect_pos_y = pos_y + border_width + (tile_size + border_width) * i;
       s3d::Rect r{rect_pos_x, rect_pos_y, tile_size, tile_size};
       s3d::Vec2 pos{rect_pos_x + tile_size / 2, rect_pos_y + tile_size / 2};
-      int value = b.get_board().at(BOARD_SIZE * i + j);
+      int value = b.get_board_array().at(BOARD_SIZE * i + j);
       s3d::String text{
           s3d::Unicode::Widen(std::to_string((int)std::pow(2, value)))};
       switch (value) {
