@@ -21,13 +21,14 @@ public:
   game_board();
   game_board(game_board const &board);
 
+  // for game master ----------------------------------------------------------
   bool add_tile(int position, int tile);
   bool can_move(int direction) const;
   std::vector<int> find_blank_tiles() const;
   bool is_terminated() const;
   void move(int direction);
 
-  int count_blank_tile() const;
+  // for game player ----------------------------------------------------------
   int get_largest_tile() const;
   int get_score() const;
   int get_turn() const;
@@ -36,10 +37,11 @@ public:
   bool is_match_available() const;
   bool is_move_available() const;
 
+  // other methods ------------------------------------------------------------
   void apply_array(int direction, int index, std::array<int, BOARD_SIZE> array);
-  bool can_move(std::array<int, BOARD_SIZE> array);
-  std::array<int, BOARD_SIZE> fetch_array(int direction, int index);
-  int get_neighbor_index(int index, int direction);
+  bool can_move(std::array<int, BOARD_SIZE> array) const;
+  std::array<int, BOARD_SIZE> fetch_array(int direction, int index) const;
+  int get_neighbor_index(int index, int direction) const;
   std::tuple<std::array<int, BOARD_SIZE>, int> move(
       std::array<int, BOARD_SIZE> array);
 

@@ -12,6 +12,8 @@ game_board::game_board(game_board const &board) {
   std::copy(board.board_.begin(), board.board_.end(), board_.begin());
 }
 
+// for game master ------------------------------------------------------------
+
 bool game_board::add_tile(int position, int tile) {
   if (position < 0 || position > BOARD_SIZE * BOARD_SIZE) {
     return false;
@@ -22,6 +24,80 @@ bool game_board::add_tile(int position, int tile) {
   board_.at(position) = tile;
   return true;
 }
+
+bool game_board::can_move(int direction) const {
+  for (int i = 0; i < BOARD_SIZE; i++) {
+    if (can_move(fetch_array(direction, i))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::vector<int> game_board::find_blank_tiles() const {
+  std::vector<int> vec = {};
+  for (std::size_t i = 0; i < board_.size(); i++) {
+    if (board_.at(i) == 0) {
+      vec.push_back((int)i);
+    }
+  }
+  return vec;
+}
+
+bool game_board::is_terminated() const {
+  return !is_move_available();
+}
+
+void game_board::move(int direction) {
+  for (int index = 0; index < BOARD_SIZE; index++) {
+    auto moved = move(fetch_array(direction, index));
+    auto array = std::get<0>(moved);
+    auto score = std::get<1>(moved);
+    apply_array(direction, index, array);
+    score_ += score;
+    turn_++;
+  }
+}
+
+// for game player ------------------------------------------------------------
+
+int game_board::get_largest_tile() const {
+  return *std::max_element(board_.begin(), board_.end());
+}
+
+int game_board::get_score() const {
+  return score_;
+}
+int game_board::get_turn() const {
+  return turn_;
+}
+
+bool game_board::is_blank(int position) const {
+  return board_.at(position) == 0;
+}
+
+bool game_board::is_blank_tile_exists() const {
+  return find_blank_tiles().size() > 0;
+}
+
+bool game_board::is_match_available() const {
+  for (int i = 0; i < (int)board_.size(); i++) {
+    for (int direction = 0; direction < 4; direction++) {
+      int neighbor = get_neighbor_index(i, direction);
+      if (neighbor >= 0 && neighbor < (int)board_.size() &&
+          board_.at(neighbor) == board_.at(i)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool game_board::is_move_available() const {
+  return is_blank_tile_exists() || is_match_available();
+}
+
+// other methods --------------------------------------------------------------
 
 void game_board::apply_array(int direction,
                              int index,
@@ -60,16 +136,7 @@ void game_board::apply_array(int direction,
   }
 }
 
-bool game_board::can_move(int direction) {
-  for (int i = 0; i < BOARD_SIZE; i++) {
-    if (can_move(fetch_array(direction, i))) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool game_board::can_move(std::array<int, BOARD_SIZE> array) {
+bool game_board::can_move(std::array<int, BOARD_SIZE> array) const {
   bool is_tile_included = false;
   for (int i = BOARD_SIZE - 1; i >= 0; i--) {
     if (array.at(i) == 0 && is_tile_included) {
@@ -85,11 +152,8 @@ bool game_board::can_move(std::array<int, BOARD_SIZE> array) {
   return false;
 }
 
-int game_board::count_blank_tile() {
-  return (int)find_blank_tiles().size();
-}
-
-std::array<int, BOARD_SIZE> game_board::fetch_array(int direction, int index) {
+std::array<int, BOARD_SIZE> game_board::fetch_array(int direction,
+                                                    int index) const {
   std::array<int, BOARD_SIZE> arr;
   switch (direction) {
     case DIRECTION_L:
@@ -129,21 +193,7 @@ std::array<int, BOARD_SIZE> game_board::fetch_array(int direction, int index) {
   }
 }
 
-std::vector<int> game_board::find_blank_tiles() {
-  std::vector<int> vec = {};
-  for (std::size_t i = 0; i < board_.size(); i++) {
-    if (board_.at(i) == 0) {
-      vec.push_back((int)i);
-    }
-  }
-  return vec;
-}
-
-int game_board::get_largest_tile() {
-  return *std::max_element(board_.begin(), board_.end());
-}
-
-int game_board::get_neighbor_index(int index, int direction) {
+int game_board::get_neighbor_index(int index, int direction) const {
   switch (direction) {
     case DIRECTION_L:
       return index % BOARD_SIZE == 0 ? -1 : index - 1;
@@ -163,53 +213,6 @@ int game_board::get_neighbor_index(int index, int direction) {
     default:
       return -1;
       break;
-  }
-}
-
-int game_board::get_score() {
-  return score_;
-}
-int game_board::get_turn() {
-  return turn_;
-}
-
-bool game_board::is_blank(int position) {
-  return board_.at(position) == 0;
-}
-
-bool game_board::is_blank_tile_exists() {
-  return count_blank_tile() > 0;
-}
-
-bool game_board::is_match_available() {
-  for (int i = 0; i < (int)board_.size(); i++) {
-    for (int direction = 0; direction < 4; direction++) {
-      int neighbor = get_neighbor_index(i, direction);
-      if (neighbor >= 0 && neighbor < (int)board_.size() &&
-          board_.at(neighbor) == board_.at(i)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-bool game_board::is_move_available() {
-  return is_blank_tile_exists() || is_match_available();
-}
-
-bool game_board::is_terminated() {
-  return !is_move_available();
-}
-
-void game_board::move(int direction) {
-  for (int index = 0; index < BOARD_SIZE; index++) {
-    auto moved = move(fetch_array(direction, index));
-    auto array = std::get<0>(moved);
-    auto score = std::get<1>(moved);
-    apply_array(direction, index, array);
-    score_ += score;
-    turn_++;
   }
 }
 
