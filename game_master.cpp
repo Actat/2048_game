@@ -1,9 +1,5 @@
 #include "game_master.hpp"
 
-std::function<void(game_board const &)> on_game_start;
-std::function<void(game_board const &)> on_turn_finished;
-std::function<void(game_board const &)> on_game_terminated;
-
 std::tuple<game_board> game_master::game(player const &player) {
   std::random_device seed_gen;
   engine_ = std::mt19937(seed_gen());
