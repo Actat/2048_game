@@ -10,7 +10,7 @@ private:
 
 public:
   player_random();
-  int play(game_board board) override;
+  int play(game_board const &board) const override;
 };
 
 player_random::player_random() {
@@ -18,7 +18,7 @@ player_random::player_random() {
   engine_ = std::mt19937(seed_gen());
 }
 
-int player_random::play(game_board board) {
+int player_random::play(game_board const &board) const {
   while (true) {
     std::uniform_int_distribution<> direction_selector(0, 3);
     int direction = direction_selector(engine_);
