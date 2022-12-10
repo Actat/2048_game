@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
   auto m = game_master();
   auto p = player_console();
   game_board board;
-  std::tie(board) = m.game(&p);
+  std::tie(board) = m.game(p);
   std::cout << board << std::endl;
 
   return 0;
