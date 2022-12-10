@@ -3,7 +3,6 @@
 #include "game_board.hpp"
 #include "game_master.hpp"
 #include "player_minimax.hpp"
-#include "player_random.hpp"
 
 #define NUM_TRIAL 100
 
