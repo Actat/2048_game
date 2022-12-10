@@ -1,5 +1,7 @@
 test:	main.o game_board.o game_master.o
 	g++ -o test.out main.o game_board.o game_master.o
+eval:	evaluate_player.o game_board.o game_master.o
+	g++ -o eval.out evaluate_player.o game_board.o game_master.o
 main.o:	main.cpp
 	g++ -c main.cpp
 game_board.o:	game_board.cpp
