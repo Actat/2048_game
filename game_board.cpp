@@ -61,6 +61,11 @@ void game_board::move(int direction) {
 
 // for game player ------------------------------------------------------------
 
+std::array<int, BOARD_SIZE * BOARD_SIZE> const &game_board::get_board_array()
+    const {
+  return board_;
+}
+
 int game_board::get_largest_tile() const {
   return *std::max_element(board_.begin(), board_.end());
 }

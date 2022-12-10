@@ -29,6 +29,7 @@ public:
   void move(int direction);
 
   // for game player ----------------------------------------------------------
+  std::array<int, BOARD_SIZE * BOARD_SIZE> const &get_board_array() const;
   int get_largest_tile() const;
   int get_score() const;
   int get_turn() const;
