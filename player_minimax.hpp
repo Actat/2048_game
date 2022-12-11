@@ -75,8 +75,8 @@ int player_minimax::evaluate_(game_board board) const {
       return eval;
     };
     for (int i = 0; i < BOARD_SIZE; i++) {
-      std::array<int, BOARD_SIZE> a1 = board.fetch_array(DIRECTION_D, i);
-      std::array<int, BOARD_SIZE> a2 = board.fetch_array(DIRECTION_L, i);
+      std::array<int, BOARD_SIZE> a1 = board.fetch_line(DIRECTION_D, i);
+      std::array<int, BOARD_SIZE> a2 = board.fetch_line(DIRECTION_L, i);
       evaluate_array += eval_array(a1);
       evaluate_array += eval_array(a2);
     }

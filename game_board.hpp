@@ -39,9 +39,9 @@ public:
   bool is_move_available() const;
 
   // other methods ------------------------------------------------------------
-  void apply_array(int direction, int index, std::array<int, BOARD_SIZE> array);
+  void apply_line(int direction, int index, std::array<int, BOARD_SIZE> array);
   bool can_move(std::array<int, BOARD_SIZE> array) const;
-  std::array<int, BOARD_SIZE> fetch_array(int direction, int index) const;
+  std::array<int, BOARD_SIZE> fetch_line(int direction, int index) const;
   int get_neighbor_index(int index, int direction) const;
   std::tuple<std::array<int, BOARD_SIZE>, int> move(
       std::array<int, BOARD_SIZE> array);

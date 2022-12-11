@@ -27,7 +27,7 @@ bool game_board::add_tile(int position, int tile) {
 
 bool game_board::can_move(int direction) const {
   for (int i = 0; i < BOARD_SIZE; i++) {
-    if (can_move(fetch_array(direction, i))) {
+    if (can_move(fetch_line(direction, i))) {
       return true;
     }
   }
@@ -50,10 +50,10 @@ bool game_board::is_terminated() const {
 
 void game_board::move(int direction) {
   for (int index = 0; index < BOARD_SIZE; index++) {
-    auto moved = move(fetch_array(direction, index));
+    auto moved = move(fetch_line(direction, index));
     auto array = std::get<0>(moved);
     auto score = std::get<1>(moved);
-    apply_array(direction, index, array);
+    apply_line(direction, index, array);
     score_ += score;
     turn_++;
   }
@@ -104,9 +104,9 @@ bool game_board::is_move_available() const {
 
 // other methods --------------------------------------------------------------
 
-void game_board::apply_array(int direction,
-                             int index,
-                             std::array<int, BOARD_SIZE> array) {
+void game_board::apply_line(int direction,
+                            int index,
+                            std::array<int, BOARD_SIZE> array) {
   switch (direction) {
     case DIRECTION_L:
       for (int i = 0; i < BOARD_SIZE; i++) {
@@ -157,8 +157,8 @@ bool game_board::can_move(std::array<int, BOARD_SIZE> array) const {
   return false;
 }
 
-std::array<int, BOARD_SIZE> game_board::fetch_array(int direction,
-                                                    int index) const {
+std::array<int, BOARD_SIZE> game_board::fetch_line(int direction,
+                                                   int index) const {
   std::array<int, BOARD_SIZE> arr;
   switch (direction) {
     case DIRECTION_L:
