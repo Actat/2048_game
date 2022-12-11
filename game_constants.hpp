@@ -21,7 +21,7 @@ public:
     time_limit_ms_ = time_limit_ms;
   }
 
-  bool is_time_over() {
+  bool is_time_over() const {
     auto duration = std::chrono::high_resolution_clock::now() - start_time_;
     return std::chrono::duration_cast<std::chrono::milliseconds>(duration)
                .count() >= time_limit_ms_;
