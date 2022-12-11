@@ -2,6 +2,7 @@
 #include <chrono>
 #include <random>
 #include "../game_board.hpp"
+#include "../game_board_eval.hpp"
 #include "../player_console.hpp"
 #include "../player_minimax.hpp"
 #include "visualizer.hpp"
@@ -10,6 +11,8 @@ void Main() {
   visualizer v;
   int scene_w = s3d::Scene::Width();
   int scene_h = s3d::Scene::Height();
+
+  auto eval = game_board_eval();
 
   std::random_device seed_gen;
   std::mt19937 engine_ = std::mt19937(seed_gen());
@@ -63,11 +66,11 @@ void Main() {
       board_.move(input);
       add_random_tile(board_);
     }
-    visualizer_data d1 = {board_, duration, 0};
+    visualizer_data d1 = {board_, duration, eval.evaluate(board_)};
     on_turn_finished(d1);
   }
 
-  visualizer_data d2 = {board_, zero_sec, 0};
+  visualizer_data d2 = {board_, zero_sec, eval.evaluate(board_)};
   if (on_game_terminated) {
     on_game_terminated(d2);
   }
