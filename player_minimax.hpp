@@ -6,16 +6,13 @@
 #include <limits>
 #include <unordered_map>
 #include "game_board.hpp"
+#include "game_board_eval.hpp"
 #include "player.hpp"
 
 class player_minimax : public player {
 private:
-  mutable std::unordered_map<std::array<int, BOARD_SIZE * BOARD_SIZE>,
-                             int,
-                             hash_board_array>
-      evaluation_cache;
+  game_board_eval eval_;
 
-  int evaluate_(game_board board) const;
   int iterative_deeping_(game_board board, int time_limit_ms) const;
   int iterative_deeping_alphabeta_(game_board board,
                                    int depth,
@@ -32,6 +29,7 @@ private:
                                        time_keeper *tk) const;
 
 public:
+  player_minimax();
   int play(game_board const &board) const override {
     return iterative_deeping_(board, 500);
   };

@@ -40,4 +40,16 @@ public:
   }
 };
 
+class hash_line_array {
+public:
+  size_t operator()(std::array<int, BOARD_SIZE> const &arr) const {
+    const int C = 97;
+    size_t t    = 0;
+    for (int i = 0; i < BOARD_SIZE; i++) {
+      t = t * C + arr.at(i);
+    }
+    return t;
+  }
+};
+
 #endif  // GAME_CONSTANTS
