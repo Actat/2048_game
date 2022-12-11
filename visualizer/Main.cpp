@@ -1,4 +1,5 @@
 #include <Siv3D.hpp>
+#include <chrono>
 #include <random>
 #include "../game_board.hpp"
 #include "../player_console.hpp"
@@ -15,13 +16,14 @@ void Main() {
 
   game_board board_ = game_board();
 
-  auto on_game_start = [&v, &scene_w, &scene_h](game_board const &b) {
-    v.draw(b, 0, 0, scene_w, scene_h);
+  auto on_game_start = [&v, &scene_w, &scene_h](visualizer_data const &data) {
+    v.draw(data, 0, 0, scene_w, scene_h);
   };
-  auto on_turn_finished = [&v, &scene_w, &scene_h](game_board const &b) {
-    v.draw(b, 0, 0, scene_w, scene_h);
+  auto on_turn_finished = [&v, &scene_w,
+                           &scene_h](visualizer_data const &data) {
+    v.draw(data, 0, 0, scene_w, scene_h);
   };
-  auto on_game_terminated = [](game_board const &b) {
+  auto on_game_terminated = [](visualizer_data const &data) {
     std::cout << "Game terminated." << std::endl;
   };
   auto add_random_tile = [&engine_](game_board &board_) {
@@ -45,7 +47,9 @@ void Main() {
   for (int i = 0; i < START_TILES; i++) {
     add_random_tile(board_);
   }
-  on_game_start(board_);
+  auto zero_sec      = std::chrono::nanoseconds(0);
+  visualizer_data d0 = {board_, zero_sec, 0};
+  on_game_start(d0);
 
   while (!board_.is_terminated() && s3d::System::Update()) {
     auto time_s   = std::chrono::system_clock::now();
@@ -59,13 +63,16 @@ void Main() {
       board_.move(input);
       add_random_tile(board_);
     }
-    on_turn_finished(board_);
+    visualizer_data d1 = {board_, duration, 0};
+    on_turn_finished(d1);
   }
+
+  visualizer_data d2 = {board_, zero_sec, 0};
   if (on_game_terminated) {
-    on_game_terminated(board_);
+    on_game_terminated(d2);
   }
 
   while (s3d::System::Update()) {
-    v.draw(board_, 0, 0, scene_w, scene_h);
+    v.draw(d2, 0, 0, scene_w, scene_h);
   }
 }

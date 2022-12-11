@@ -2,7 +2,14 @@
 #define VISUALIZER_HPP
 
 #include <Siv3D.hpp>
+#include <chrono>
 #include "../game_board.hpp"
+
+struct visualizer_data {
+  game_board &board;
+  std::chrono::duration<int64_t, std::nano> &duration;
+  int eval_score;
+};
 
 class visualizer {
 private:
@@ -28,14 +35,22 @@ private:
 
 public:
   visualizer();
-  void draw(game_board b, int pos_x, int pos_y, int size_x, int size_y);
-  void draw_board(game_board b, int pos_x, int pos_y, int size);
-  void draw_info(game_board b, int pos_x, int pos_y, int size_x, int size_y);
+  void draw(visualizer_data const &data,
+            int pos_x,
+            int pos_y,
+            int size_x,
+            int size_y);
+  void draw_board(game_board const &b, int pos_x, int pos_y, int size);
+  void draw_info(visualizer_data const &data,
+                 int pos_x,
+                 int pos_y,
+                 int size_x,
+                 int size_y);
 };
 
 visualizer::visualizer() {}
 
-void visualizer::draw(game_board b,
+void visualizer::draw(visualizer_data const &data,
                       int pos_x,
                       int pos_y,
                       int size_x,
@@ -44,14 +59,17 @@ void visualizer::draw(game_board b,
   if (size_x > size_y) {
     int pading_size = size_x * 0.05;
     int board_size  = size_y - 2 * pading_size;
-    draw_board(b, pos_x + pading_size, pos_y + (size_y - board_size) / 2,
-               board_size);
-    draw_info(b, pos_x + 2 * pading_size + board_size, pos_y + pading_size,
+    draw_board(data.board, pos_x + pading_size,
+               pos_y + (size_y - board_size) / 2, board_size);
+    draw_info(data, pos_x + 2 * pading_size + board_size, pos_y + pading_size,
               size_x - 3 * pading_size - board_size, size_y - 2 * pading_size);
   }
 }
 
-void visualizer::draw_board(game_board b, int pos_x, int pos_y, int size) {
+void visualizer::draw_board(game_board const &b,
+                            int pos_x,
+                            int pos_y,
+                            int size) {
   s3d::Rect{pos_x, pos_y, size, size}.draw(COLOR_BG);
   int border_width = size * 5 / 100 / (BOARD_SIZE);
   int tile_size    = (size - border_width * (BOARD_SIZE + 1)) / BOARD_SIZE;
@@ -134,38 +152,72 @@ void visualizer::draw_board(game_board b, int pos_x, int pos_y, int size) {
   }
 };
 
-void visualizer::draw_info(game_board b,
+void visualizer::draw_info(visualizer_data const &data,
                            int pos_x,
                            int pos_y,
                            int size_x,
                            int size_y) {
   int turn_pos_x, turn_pos_y, turn_size_x, turn_size_y;
   int score_pos_x, score_pos_y, score_size_x, score_size_y;
+  int duration_pos_x, duration_pos_y, duration_size_x, duration_size_y;
+  int eval_pos_x, eval_pos_y, eval_size_x, eval_size_y;
   s3d::Rect turn;
   s3d::Rect score;
+  s3d::Rect duration;
+  s3d::Rect eval;
   if (size_x < size_y) {
-    turn_pos_x   = pos_x;
-    turn_pos_y   = pos_y;
-    turn_size_x  = size_x;
-    turn_size_y  = 60;
-    score_pos_x  = pos_x;
-    score_pos_y  = turn_pos_y + turn_size_y + size_y * 5 / 100;
-    score_size_x = size_x;
-    score_size_y = 60;
-    turn         = s3d::Rect{turn_pos_x, turn_pos_y, turn_size_x, turn_size_y};
-    score = s3d::Rect{score_pos_x, score_pos_y, score_size_x, score_size_y};
+    turn_pos_x      = pos_x;
+    turn_pos_y      = pos_y;
+    turn_size_x     = size_x;
+    turn_size_y     = 60;
+    score_pos_x     = pos_x;
+    score_pos_y     = turn_pos_y + turn_size_y + size_y * 5 / 100;
+    score_size_x    = size_x;
+    score_size_y    = 60;
+    duration_pos_x  = pos_x;
+    duration_pos_y  = score_pos_y + score_size_y + size_y * 5 / 100;
+    duration_size_x = size_x;
+    duration_size_y = 60;
+    eval_pos_x      = pos_x;
+    eval_pos_y      = duration_pos_y + duration_size_y + size_y * 5 / 100;
+    eval_size_x     = size_x;
+    eval_size_y     = 60;
+    turn     = s3d::Rect{turn_pos_x, turn_pos_y, turn_size_x, turn_size_y};
+    score    = s3d::Rect{score_pos_x, score_pos_y, score_size_x, score_size_y};
+    duration = s3d::Rect{duration_pos_x, duration_pos_y, duration_size_x,
+                         duration_size_y};
+    eval     = s3d::Rect{eval_pos_x, eval_pos_y, eval_size_x, eval_size_y};
   }
   turn.draw(COLOR_BG);
   score.draw(COLOR_BG);
+  duration.draw(COLOR_BG);
+  eval.draw(COLOR_BG);
   FONT_L(U"Turn").drawAt(turn_pos_x + turn_size_x / 2,
                          turn_pos_y + turn_size_y / 4, COLOR_VALUE_L);
-  FONT_L(s3d::String{s3d::Unicode::Widen(std::to_string(b.get_turn()))})
+  FONT_L(
+      s3d::String{s3d::Unicode::Widen(std::to_string(data.board.get_turn()))})
       .drawAt(turn_pos_x + turn_size_x / 2, turn_pos_y + turn_size_y * 3 / 4,
               COLOR_VALUE_L);
   FONT_L(U"Score").drawAt(score_pos_x + score_size_x / 2,
                           score_pos_y + score_size_y / 4, COLOR_VALUE_L);
-  FONT_L(s3d::String{s3d::Unicode::Widen(std::to_string(b.get_score()))})
+  FONT_L(
+      s3d::String{s3d::Unicode::Widen(std::to_string(data.board.get_score()))})
       .drawAt(score_pos_x + score_size_x / 2,
               score_pos_y + score_size_y * 3 / 4, COLOR_VALUE_L);
+  FONT_L(U"Duration")
+      .drawAt(duration_pos_x + duration_size_x / 2,
+              duration_pos_y + duration_size_y / 4, COLOR_VALUE_L);
+  FONT_L(
+      s3d::String{s3d::Unicode::Widen(std::to_string(
+          std::chrono::duration_cast<std::chrono::milliseconds>(data.duration)
+              .count()))})
+      .drawAt(duration_pos_x + duration_size_x / 2,
+              duration_pos_y + duration_size_y * 3 / 4, COLOR_VALUE_L);
+  FONT_L(U"Eval. score")
+      .drawAt(eval_pos_x + eval_size_x / 2, eval_pos_y + eval_size_y / 4,
+              COLOR_VALUE_L);
+  FONT_L(s3d::String{s3d::Unicode::Widen(std::to_string(data.eval_score))})
+      .drawAt(eval_pos_x + eval_size_x / 2, eval_pos_y + eval_size_y * 3 / 4,
+              COLOR_VALUE_L);
 }
 #endif  // VISUALIZER_HPP
