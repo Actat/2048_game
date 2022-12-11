@@ -6,7 +6,7 @@
 class player {
 private:
 public:
-  virtual int play(game_board board) {  // Override this function!
+  virtual int play(game_board const &board) const {  // Override this function!
     if (board.can_move(DIRECTION_L)) {
       return DIRECTION_L;
     } else if (board.can_move(DIRECTION_D)) {

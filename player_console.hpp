@@ -1,19 +1,20 @@
 #ifndef PLAYER_CONSOLE_HPP
 #define PLAYER_CONSOLE_HPP
 
+#include <iostream>
 #include <string>
 #include "game_board.hpp"
 #include "player.hpp"
 
 class player_console : public player {
 private:
-  int get_input(game_board board);
+  int get_input(game_board board) const;
 
 public:
-  int play(game_board board) override { return get_input(board); };
+  int play(game_board const &board) const override { return get_input(board); };
 };
 
-int player_console::get_input(game_board board) {
+int player_console::get_input(game_board board) const {
   int direction;
   std::string str;
   while (true) {

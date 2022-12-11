@@ -13,6 +13,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 add_executable(visualizer.out
   Main.cpp
+  ../game_board.cpp
+  ../game_board_eval.cpp
+  ../player_minimax.cpp
   )
 
 find_package(Siv3D)
