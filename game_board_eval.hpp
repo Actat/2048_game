@@ -15,6 +15,8 @@ private:
   static std::unordered_map<std::array<int, BOARD_SIZE>, int, hash_line_array>
       line_cache_;
 
+  int evaluate_line_(std::array<int, BOARD_SIZE> &line) const;
+
 public:
   int evaluate(game_board const &board) const;
 };
