@@ -35,10 +35,14 @@ int game_board_eval::evaluate_line_(std::array<int, BOARD_SIZE> &line) const {
   try {
     return line_cache_.at(line);
   } catch (std::out_of_range &) {
-    int monotonic = 0;  // 0 or 1
-    int trend_p   = 0;
-    int trend_n   = 0;
+    int monotonic    = 0;
+    int largest_tile = 0;
+    int trend_p      = 0;
+    int trend_n      = 0;
     for (int i = 0; i < BOARD_SIZE - 1; i++) {
+      if (line[i] > largest_tile) {
+        largest_tile = line[i];
+      }
       if (line[i] <= line[i + 1]) {
         trend_p++;
       } else if (line[i] >= line[i + 1]) {
@@ -46,7 +50,7 @@ int game_board_eval::evaluate_line_(std::array<int, BOARD_SIZE> &line) const {
       }
     }
     if (trend_p == BOARD_SIZE - 1 || trend_n == BOARD_SIZE - 1) {
-      monotonic = 1;
+      monotonic = largest_tile;
     }
 
     int zeros = 0;
@@ -56,6 +60,6 @@ int game_board_eval::evaluate_line_(std::array<int, BOARD_SIZE> &line) const {
       }
     }
 
-    return monotonic * 100 + zeros * 5;
+    return monotonic * 30 + zeros * 50;
   }
 };
