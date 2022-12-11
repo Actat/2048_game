@@ -102,26 +102,47 @@ int player_dfs::iterative_deeping_dfs_add_(game_board const &board,
 
   double eval_score = 0;
   auto blanks       = board.find_blank_tiles();
-  std::for_each(
-      blanks.begin(), blanks.end(),
-      [this, &board, &depth, &tk, &eval_score](int position) {
-        auto b1 = game_board(board);
-        b1.add_tile(position, 1);
-        eval_score += 9 * iterative_deeping_dfs_move_(b1, depth - 1, tk);
-        if (tk.is_time_over()) {
-          return;
-        }
 
-        auto b2 = game_board(board);
-        b2.add_tile(position, 2);
-        eval_score += 1 * iterative_deeping_dfs_move_(b2, depth - 1, tk);
-        if (tk.is_time_over()) {
-          return;
-        }
-      });
+  if (blanks.size() < 3) {
+    std::for_each(
+        blanks.begin(), blanks.end(),
+        [this, &board, &depth, &tk, &eval_score](int position) {
+          int tmp_score = 0;
+
+          auto b1 = game_board(board);
+          b1.add_tile(position, 1);
+          tmp_score += 9 * iterative_deeping_dfs_move_(b1, depth - 1, tk);
+          if (tk.is_time_over()) {
+            return;
+          }
+
+          auto b2 = game_board(board);
+          b2.add_tile(position, 2);
+          tmp_score += 1 * iterative_deeping_dfs_move_(b2, depth - 1, tk);
+          if (tk.is_time_over()) {
+            return;
+          }
+
+          eval_score += (int)(tmp_score / 10.0);
+        });
+  } else {
+    std::for_each(blanks.begin(), blanks.end(),
+                  [this, &board, &depth, &tk, &eval_score](int position) {
+                    int tmp_score = 0;
+
+                    auto b1 = game_board(board);
+                    b1.add_tile(position, 1);
+                    tmp_score += iterative_deeping_dfs_move_(b1, depth - 1, tk);
+                    if (tk.is_time_over()) {
+                      return;
+                    }
+
+                    eval_score += tmp_score;
+                  });
+  }
   if (tk.is_time_over()) {
     return std::numeric_limits<int>::min();
   }
 
-  return (int)eval_score / (blanks.size() * 10.0);
+  return (int)eval_score / blanks.size();
 }
