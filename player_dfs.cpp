@@ -12,8 +12,10 @@ int player_dfs::iterative_deeping_(game_board const &board,
     int dir = iterative_deeping_dfs_(board, depth, tk);
 
     if (tk.is_time_over()) {
-      std::cout << "Time is up. depth: " << depth - 1  //
-                << ", direction: " << best_direction << std::endl;
+      std::cout << std::endl
+                << "Time is up. depth: " << depth - 1  //
+                << ", direction: " << best_direction << std::endl
+                << std::endl;
       break;
     }
 
@@ -40,8 +42,10 @@ int player_dfs::iterative_deeping_dfs_(game_board const &board,
         return best_direction;
       }
 
+      /*
       std::cout << "depth: " << depth << " dir: " << direction
                 << " score: " << evaluate_score << std::endl;
+      */
 
       if (evaluate_score > best_evaluate_score) {
         best_direction      = direction;
