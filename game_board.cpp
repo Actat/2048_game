@@ -2,8 +2,9 @@
 
 game_board::game_board() {
   board_.fill(0);
-  score_ = 0;
-  turn_  = 0;
+  score_    = 0;
+  turn_     = 0;
+  tile_sum_ = 0;
 }
 
 game_board::game_board(game_board const &board) {
@@ -22,6 +23,7 @@ bool game_board::add_tile(int position, int tile) {
     return false;
   }
   board_.at(position) = tile;
+  tile_sum_ += (int)std::pow(2, tile);
   return true;
 }
 
@@ -73,6 +75,11 @@ int game_board::get_largest_tile() const {
 int game_board::get_score() const {
   return score_;
 }
+
+int game_board::get_tile_sum() const {
+  return tile_sum_;
+}
+
 int game_board::get_turn() const {
   return turn_;
 }
