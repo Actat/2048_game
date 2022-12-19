@@ -21,7 +21,8 @@ int player_dfs::iterative_deeping_(game_board const &board,
 
     best_direction = dir;
     std::cout << "depth: " << depth
-              << " completed. best_direction: " << best_direction << std::endl;
+              << " completed. best_direction: " << best_direction
+              << " time passed: " << tk.get_duration_ms() << std::endl;
   }
 
   return best_direction;
