@@ -2,7 +2,7 @@
 #include <iostream>
 #include "game_board.hpp"
 #include "game_master.hpp"
-#include "player_minimax.hpp"
+#include "player_dfs.hpp"
 
 #define NUM_TRIAL 100
 
@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < NUM_TRIAL; i++) {
     auto m = game_master();
     // auto p = player_random();
-    auto p = player_minimax();
+    auto p = player_dfs();
 
     game_board board;
     std::tie(board) = m.game(p);

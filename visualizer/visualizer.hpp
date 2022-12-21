@@ -161,8 +161,10 @@ void visualizer::draw_info(visualizer_data const &data,
   int score_pos_x, score_pos_y, score_size_x, score_size_y;
   int duration_pos_x, duration_pos_y, duration_size_x, duration_size_y;
   int eval_pos_x, eval_pos_y, eval_size_x, eval_size_y;
+  int tile_sum_pos_x, tile_sum_pos_y, tile_sum_size_x, tile_sum_size_y;
   s3d::Rect turn;
   s3d::Rect score;
+  s3d::Rect tile_sum;
   s3d::Rect duration;
   s3d::Rect eval;
   if (size_x < size_y) {
@@ -174,8 +176,12 @@ void visualizer::draw_info(visualizer_data const &data,
     score_pos_y     = turn_pos_y + turn_size_y + size_y * 5 / 100;
     score_size_x    = size_x;
     score_size_y    = 60;
+    tile_sum_pos_x  = pos_x;
+    tile_sum_pos_y  = score_pos_y + score_size_y + size_y * 5 / 100;
+    tile_sum_size_x = size_x;
+    tile_sum_size_y = 60;
     duration_pos_x  = pos_x;
-    duration_pos_y  = score_pos_y + score_size_y + size_y * 5 / 100;
+    duration_pos_y  = tile_sum_pos_y + tile_sum_size_y + size_y * 5 / 100;
     duration_size_x = size_x;
     duration_size_y = 60;
     eval_pos_x      = pos_x;
@@ -184,12 +190,15 @@ void visualizer::draw_info(visualizer_data const &data,
     eval_size_y     = 60;
     turn     = s3d::Rect{turn_pos_x, turn_pos_y, turn_size_x, turn_size_y};
     score    = s3d::Rect{score_pos_x, score_pos_y, score_size_x, score_size_y};
+    tile_sum = s3d::Rect{tile_sum_pos_x, tile_sum_pos_y, tile_sum_size_x,
+                         tile_sum_size_y};
     duration = s3d::Rect{duration_pos_x, duration_pos_y, duration_size_x,
                          duration_size_y};
     eval     = s3d::Rect{eval_pos_x, eval_pos_y, eval_size_x, eval_size_y};
   }
   turn.draw(COLOR_BG);
   score.draw(COLOR_BG);
+  tile_sum.draw(COLOR_BG);
   duration.draw(COLOR_BG);
   eval.draw(COLOR_BG);
   FONT_L(U"Turn").drawAt(turn_pos_x + turn_size_x / 2,
@@ -204,6 +213,13 @@ void visualizer::draw_info(visualizer_data const &data,
       s3d::String{s3d::Unicode::Widen(std::to_string(data.board.get_score()))})
       .drawAt(score_pos_x + score_size_x / 2,
               score_pos_y + score_size_y * 3 / 4, COLOR_VALUE_L);
+  FONT_L(U"Tile sum")
+      .drawAt(tile_sum_pos_x + tile_sum_size_x / 2,
+              tile_sum_pos_y + tile_sum_size_y / 4, COLOR_VALUE_L);
+  FONT_L(s3d::String{
+             s3d::Unicode::Widen(std::to_string(data.board.get_tile_sum()))})
+      .drawAt(tile_sum_pos_x + tile_sum_size_x / 2,
+              tile_sum_pos_y + tile_sum_size_y * 3 / 4, COLOR_VALUE_L);
   FONT_L(U"Duration")
       .drawAt(duration_pos_x + duration_size_x / 2,
               duration_pos_y + duration_size_y / 4, COLOR_VALUE_L);
