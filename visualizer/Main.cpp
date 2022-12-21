@@ -4,7 +4,7 @@
 #include "../game_board.hpp"
 #include "../game_board_eval.hpp"
 #include "../player_console.hpp"
-#include "../player_dfs.hpp"
+#include "../player_game_tree.hpp"
 #include "visualizer.hpp"
 
 void Main() {
@@ -45,7 +45,7 @@ void Main() {
   };
 
   // auto p = player_console();
-  auto p = player_dfs();
+  auto p = player_game_tree();
 
   for (int i = 0; i < START_TILES; i++) {
     add_random_tile(board_);
