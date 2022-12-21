@@ -15,7 +15,7 @@ add_executable(visualizer.out
   Main.cpp
   ../game_board.cpp
   ../game_board_eval.cpp
-  ../player_dfs.cpp
+  ../player_game_tree.cpp
   )
 
 find_package(Siv3D)
