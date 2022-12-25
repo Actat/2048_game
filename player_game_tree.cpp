@@ -14,6 +14,13 @@ game_tree_node::game_tree_node(game_board_eval const &e,
 }
 
 int game_tree_node::best_move(int const depth, time_keeper const &tk) {
+  if (children_.empty()) {
+    add_children_();
+    if (tk.is_time_over()) {
+      return score_;
+    }
+  }
+
   int best_move  = -1;
   int best_score = std::numeric_limits<int>::min();
   for (auto child : children_) {
