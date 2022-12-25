@@ -30,7 +30,7 @@ private:
 
 public:
   player_minimax();
-  int play(game_board const &board) const override {
+  int play(game_board const &board) override {
     return iterative_deeping_(board, 500);
   };
 };

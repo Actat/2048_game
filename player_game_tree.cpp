@@ -1,15 +1,179 @@
 #include "player_game_tree.hpp"
 
+game_tree_node::game_tree_node(game_board_eval const &e,
+                               game_board const &b,
+                               bool is_player_turn,
+                               int move) {
+  eval_           = e;
+  board_          = b;
+  is_player_turn_ = is_player_turn;
+  move_           = move;
+  score_          = eval_.evaluate(board_);
+
+  children_ = std::vector<std::shared_ptr<game_tree_node>>();
+}
+
+int game_tree_node::best_move(int const depth, time_keeper const &tk) {
+  int best_move  = -1;
+  int best_score = std::numeric_limits<int>::min();
+  for (auto child : children_) {
+    int const s = child->get_eval_score(depth, tk);
+
+    if (tk.is_time_over()) {
+      return -1;
+    }
+
+    if (s > best_score) {
+      best_move  = child->get_move();
+      best_score = s;
+    }
+  }
+  return best_move;
+}
+
+game_board const game_tree_node::get_board() const {
+  return board_;
+}
+
+int game_tree_node::get_eval_score(int const depth, time_keeper const &tk) {
+  if (depth == 0) {
+    return score_;
+  }
+
+  if (tk.is_time_over()) {
+    return score_;
+  }
+
+  if (children_.empty()) {
+    add_children_();
+    if (tk.is_time_over()) {
+      return score_;
+    }
+  }
+
+  if (is_player_turn_) {
+    int best = std::numeric_limits<int>::min();
+    for (auto child : children_) {
+      int const s = child->get_eval_score(depth - 1, tk);
+
+      if (tk.is_time_over()) {
+        return score_;
+      }
+
+      if (s > best) {
+        best = s;
+      }
+    }
+    return best;
+  } else {
+    int sum = 0;
+    for (auto child : children_) {
+      int const s = child->get_eval_score(depth - 1, tk);
+
+      if (tk.is_time_over()) {
+        return score_;
+      }
+
+      sum += s;
+    }
+    return sum / children_.size();
+  }
+}
+
+int game_tree_node::get_move() const {
+  return move_;
+}
+
+std::shared_ptr<game_tree_node> game_tree_node::find(
+    game_board const &b) const {
+  for (auto &child : children_) {
+    if (child.get()->get_board().get_tile_sum() > b.get_tile_sum()) {
+      auto ptr = child.get()->find(b);
+      if (ptr) {
+        return ptr;
+      }
+    } else if (child.get()->get_board().get_tile_sum() == b.get_tile_sum()) {
+      if (child.get()->get_board() == b) {
+        return child;
+      }
+    }
+  }
+  return nullptr;
+}
+
+bool game_tree_node::add_children_() {
+  if (is_player_turn_) {
+    for (int i = 0; i < 4; i++) {
+      auto b = game_board(board_);
+      if (b.can_move(i)) {
+        b.move(i);
+        std::shared_ptr<game_tree_node> ptr(
+            new game_tree_node(eval_, b, !is_player_turn_, i));
+        children_.push_back(ptr);
+      }
+    }
+  } else {
+    auto blanks = board_.find_blank_tiles();
+    for (auto blank : blanks) {
+      auto b1 = game_board(board_);
+      auto b2 = game_board(board_);
+      b1.add_tile(blank, 1);
+      b2.add_tile(blank, 2);
+      std::shared_ptr<game_tree_node> ptr1(
+          new game_tree_node(eval_, b1, !is_player_turn_, -1));
+      std::shared_ptr<game_tree_node> ptr2(
+          new game_tree_node(eval_, b2, !is_player_turn_, -1));
+      children_.push_back(ptr1);
+      children_.push_back(ptr2);
+    }
+  }
+  return true;
+}
+
+game_tree::game_tree() {
+  eval_      = game_board_eval();
+  root_node_ = nullptr;
+}
+
+int game_tree::best_move(int const depth, time_keeper const &tk) {
+  if (!root_node_) {
+    return -1;
+  }
+
+  int best = root_node_.get()->best_move(depth, tk);
+  if (tk.is_time_over()) {
+    return -1;
+  } else {
+    return best;
+  }
+}
+
+void game_tree::update_root(game_board const &b) {
+  if (!root_node_) {
+    root_node_.reset(new game_tree_node(eval_, b, true, -1));
+    return;
+  }
+
+  if (root_node_->get_board() == b) {
+    return;
+  }
+
+  root_node_ = root_node_.get()->find(b);
+}
+
 player_game_tree::player_game_tree() {
-  eval_ = game_board_eval();
+  tree_ = game_tree();
 }
 
 int player_game_tree::iterative_deeping_(game_board const &board,
-                                         int time_limit_ms) const {
+                                         int time_limit_ms) {
   auto tk            = time_keeper(time_limit_ms);
   int best_direction = -1;
+
+  tree_.update_root(board);
+
   for (int depth = 1;; depth++) {
-    int dir = iterative_deeping_dfs_(board, depth, tk);
+    int dir = tree_.best_move(depth, tk);
 
     if (tk.is_time_over()) {
       std::cout << std::endl
@@ -26,128 +190,4 @@ int player_game_tree::iterative_deeping_(game_board const &board,
   }
 
   return best_direction;
-}
-
-int player_game_tree::iterative_deeping_dfs_(game_board const &board,
-                                             int depth,
-                                             time_keeper const &tk) const {
-  int best_direction      = -1;
-  int best_evaluate_score = std::numeric_limits<int>::min();
-  for (int direction = 0; direction < 4; direction++) {
-    if (board.can_move(direction)) {
-      auto b = game_board(board);
-      b.move(direction);
-      int evaluate_score = iterative_deeping_dfs_add_(b, depth, tk);
-
-      if (tk.is_time_over()) {
-        return best_direction;
-      }
-
-      /*
-      std::cout << "depth: " << depth << " dir: " << direction
-                << " score: " << evaluate_score << std::endl;
-      */
-
-      if (evaluate_score > best_evaluate_score) {
-        best_direction      = direction;
-        best_evaluate_score = evaluate_score;
-      }
-    }
-  }
-  return best_direction;
-}
-
-int player_game_tree::iterative_deeping_dfs_move_(game_board const &board,
-                                                  int depth,
-                                                  time_keeper const &tk) const {
-  if (tk.is_time_over()) {
-    return std::numeric_limits<int>::min();
-  }
-
-  if (depth == 0 || board.is_terminated()) {
-    return eval_.evaluate(board);
-  }
-
-  auto legal_move = std::vector<int>{};
-  for (int dir = 0; dir < 4; dir++) {
-    if (board.can_move(dir)) {
-      legal_move.push_back(dir);
-    }
-  }
-
-  int best_eval_score = std::numeric_limits<int>::min();
-  std::for_each(legal_move.begin(), legal_move.end(),
-                [this, &board, &depth, &tk, &best_eval_score](int direction) {
-                  auto b = game_board(board);
-                  b.move(direction);
-                  int eval_score = iterative_deeping_dfs_add_(b, depth - 1, tk);
-
-                  if (tk.is_time_over()) {
-                    return;
-                  }
-
-                  if (eval_score >= best_eval_score) {
-                    best_eval_score = eval_score;
-                  }
-                });
-
-  return best_eval_score;
-}
-
-int player_game_tree::iterative_deeping_dfs_add_(game_board const &board,
-                                                 int depth,
-                                                 time_keeper const &tk) const {
-  if (tk.is_time_over()) {
-    return std::numeric_limits<int>::min();
-  }
-
-  if (depth == 0 || board.is_terminated()) {
-    return eval_.evaluate(board);
-  }
-
-  double eval_score = 0;
-  auto blanks       = board.find_blank_tiles();
-
-  if (blanks.size() < 3) {
-    std::for_each(
-        blanks.begin(), blanks.end(),
-        [this, &board, &depth, &tk, &eval_score](int position) {
-          int tmp_score = 0;
-
-          auto b1 = game_board(board);
-          b1.add_tile(position, 1);
-          tmp_score += 9 * iterative_deeping_dfs_move_(b1, depth - 1, tk);
-          if (tk.is_time_over()) {
-            return;
-          }
-
-          auto b2 = game_board(board);
-          b2.add_tile(position, 2);
-          tmp_score += 1 * iterative_deeping_dfs_move_(b2, depth - 1, tk);
-          if (tk.is_time_over()) {
-            return;
-          }
-
-          eval_score += (int)(tmp_score / 10.0);
-        });
-  } else {
-    std::for_each(blanks.begin(), blanks.end(),
-                  [this, &board, &depth, &tk, &eval_score](int position) {
-                    int tmp_score = 0;
-
-                    auto b1 = game_board(board);
-                    b1.add_tile(position, 1);
-                    tmp_score += iterative_deeping_dfs_move_(b1, depth - 1, tk);
-                    if (tk.is_time_over()) {
-                      return;
-                    }
-
-                    eval_score += tmp_score;
-                  });
-  }
-  if (tk.is_time_over()) {
-    return std::numeric_limits<int>::min();
-  }
-
-  return (int)eval_score / blanks.size();
 }
