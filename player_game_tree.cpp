@@ -94,7 +94,7 @@ int game_tree_node::get_move() const {
 std::shared_ptr<game_tree_node> game_tree_node::find(
     game_board const &b) const {
   for (auto &child : children_) {
-    if (child.get()->get_board().get_tile_sum() > b.get_tile_sum()) {
+    if (child.get()->get_board().get_tile_sum() < b.get_tile_sum()) {
       auto ptr = child.get()->find(b);
       if (ptr) {
         return ptr;
