@@ -8,7 +8,7 @@ game_tree_node::game_tree_node(game_board_eval const &e,
   board_          = b;
   is_player_turn_ = is_player_turn;
   move_           = move;
-  score_          = eval_.evaluate(board_);
+  score_          = std::vector<int>{eval_.evaluate(board_)};
 
   children_ = std::vector<std::shared_ptr<game_tree_node>>();
 }
@@ -17,7 +17,7 @@ int game_tree_node::best_move(int const depth, time_keeper const &tk) {
   if (children_.empty()) {
     add_children_();
     if (tk.is_time_over()) {
-      return score_;
+      return score_.at(0);
     }
   }
 
@@ -43,18 +43,18 @@ game_board const game_tree_node::get_board() const {
 }
 
 int game_tree_node::get_eval_score(int const depth, time_keeper const &tk) {
-  if (depth == 0) {
-    return score_;
+  if (depth < score_.size()) {
+    return score_.at(depth);
   }
 
   if (tk.is_time_over()) {
-    return score_;
+    return score_.at(0);
   }
 
   if (children_.empty()) {
     add_children_();
     if (tk.is_time_over()) {
-      return score_;
+      return score_.at(0);
     }
   }
 
@@ -64,13 +64,14 @@ int game_tree_node::get_eval_score(int const depth, time_keeper const &tk) {
       int const s = child->get_eval_score(depth - 1, tk);
 
       if (tk.is_time_over()) {
-        return score_;
+        return score_.at(0);
       }
 
       if (s > best) {
         best = s;
       }
     }
+    score_.push_back(best);
     return best;
   } else {
     int sum = 0;
@@ -78,12 +79,14 @@ int game_tree_node::get_eval_score(int const depth, time_keeper const &tk) {
       int const s = child->get_eval_score(depth - 1, tk);
 
       if (tk.is_time_over()) {
-        return score_;
+        return score_.at(0);
       }
 
       sum += s;
     }
-    return sum / children_.size();
+    auto average = sum / children_.size();
+    score_.push_back(average);
+    return average;
   }
 }
 

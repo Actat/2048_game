@@ -15,7 +15,7 @@ class game_tree_node {
 private:
   game_board_eval eval_;
   game_board board_;
-  int score_;
+  std::vector<int> score_;
   bool is_player_turn_;
   int move_;
   std::vector<std::shared_ptr<game_tree_node>> children_;
