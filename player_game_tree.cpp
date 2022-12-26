@@ -114,8 +114,8 @@ bool game_tree_node::add_children_() {
       auto b = game_board(board_);
       if (b.can_move(i)) {
         b.move(i);
-        std::shared_ptr<game_tree_node> ptr(
-            new game_tree_node(eval_, b, !is_player_turn_, i));
+        std::shared_ptr<game_tree_node> ptr =
+            std::make_shared<game_tree_node>(eval_, b, !is_player_turn_, i);
         children_.push_back(ptr);
       }
     }
@@ -126,10 +126,10 @@ bool game_tree_node::add_children_() {
       auto b2 = game_board(board_);
       b1.add_tile(blank, 1);
       b2.add_tile(blank, 2);
-      std::shared_ptr<game_tree_node> ptr1(
-          new game_tree_node(eval_, b1, !is_player_turn_, -1));
-      std::shared_ptr<game_tree_node> ptr2(
-          new game_tree_node(eval_, b2, !is_player_turn_, -1));
+      std::shared_ptr<game_tree_node> ptr1 =
+          std::make_shared<game_tree_node>(eval_, b1, !is_player_turn_, -1);
+      std::shared_ptr<game_tree_node> ptr2 =
+          std::make_shared<game_tree_node>(eval_, b2, !is_player_turn_, -1);
       children_.push_back(ptr1);
       children_.push_back(ptr2);
     }
@@ -157,7 +157,7 @@ int game_tree::best_move(int const depth, time_keeper const &tk) {
 
 void game_tree::update_root(game_board const &b) {
   if (!root_node_) {
-    root_node_.reset(new game_tree_node(eval_, b, true, -1));
+    root_node_ = std::make_shared<game_tree_node>(eval_, b, true, -1);
     return;
   }
 
@@ -165,7 +165,7 @@ void game_tree::update_root(game_board const &b) {
     return;
   }
 
-  root_node_ = root_node_.get()->find(b);
+  root_node_ = std::move(root_node_.get()->find(b));
 }
 
 player_game_tree::player_game_tree() {
