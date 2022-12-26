@@ -179,6 +179,9 @@ int player_game_tree::iterative_deeping_(game_board const &board,
 
   tree_.update_root(board);
 
+  std::cout << "Root is updated in " << tk.get_duration_ms() << " ms."
+            << std::endl;
+
   for (int depth = 1;; depth++) {
     int dir = tree_.best_move(depth, tk);
 
