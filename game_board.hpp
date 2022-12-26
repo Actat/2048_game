@@ -50,17 +50,9 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const game_board &board);
   bool operator==(game_board const &rhs) const {
-    if (score_ != rhs.score_   //
-        || turn_ != rhs.turn_  //
-        || tile_sum_ != rhs.tile_sum_) {
-      return false;
-    }
-    for (int i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
-      if (board_.at(i) != rhs.board_.at(i)) {
-        return false;
-      }
-    }
-    return true;
+    return score_ == rhs.score_ && turn_ == rhs.turn_ &&
+           tile_sum_ == rhs.tile_sum_ &&
+           std::equal(board_.cbegin(), board_.cend(), rhs.board_.cbegin());
   };
   inline bool operator!=(game_board const &rhs) const {
     return !(*this == rhs);
