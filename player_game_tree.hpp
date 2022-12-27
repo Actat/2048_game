@@ -29,7 +29,10 @@ public:
                  int move);
   int best_move(int const depth, time_keeper const &tk);
   game_board const get_board() const;
-  int get_eval_score(int const depth, time_keeper const &tk);
+  int get_eval_score(int const depth,
+                     time_keeper const &tk,
+                     int alpha,
+                     int beta);
   int get_move() const;
   std::shared_ptr<game_tree_node> find(game_board const &b) const;
 };

@@ -24,7 +24,9 @@ int game_tree_node::best_move(int const depth, time_keeper const &tk) {
   int best_move  = -1;
   int best_score = std::numeric_limits<int>::min();
   for (auto child : children_) {
-    int const s = child->get_eval_score(depth - 1, tk);
+    int const s =
+        child->get_eval_score(depth - 1, tk, std::numeric_limits<int>::min(),
+                              std::numeric_limits<int>::max());
 
     if (tk.is_time_over()) {
       return -1;
@@ -42,7 +44,10 @@ game_board const game_tree_node::get_board() const {
   return board_;
 }
 
-int game_tree_node::get_eval_score(int const depth, time_keeper const &tk) {
+int game_tree_node::get_eval_score(int const depth,
+                                   time_keeper const &tk,
+                                   int alpha,
+                                   int beta) {
   if (depth < score_.size()) {
     return score_.at(depth);
   }
@@ -59,35 +64,34 @@ int game_tree_node::get_eval_score(int const depth, time_keeper const &tk) {
   }
 
   if (is_player_turn_) {
-    int best = std::numeric_limits<int>::min();
     for (auto child : children_) {
-      int const s = child->get_eval_score(depth - 1, tk);
+      alpha =
+          std::max(alpha, child->get_eval_score(depth - 1, tk, alpha, beta));
 
       if (tk.is_time_over()) {
         return score_.at(0);
       }
 
-      if (s >= best) {
-        best = s;
+      if (alpha >= beta) {
+        break;
       }
     }
-    score_.push_back(best);
-    return best;
+    score_.push_back(alpha);
+    return alpha;
   } else {
-    int worst = std::numeric_limits<int>::max();
     for (auto child : children_) {
-      int const s = child->get_eval_score(depth - 1, tk);
+      beta = std::min(beta, child->get_eval_score(depth - 1, tk, alpha, beta));
 
       if (tk.is_time_over()) {
         return score_.at(0);
       }
 
-      if (s <= worst) {
-        worst = s;
+      if (alpha >= beta) {
+        break;
       }
     }
-    score_.push_back(worst);
-    return worst;
+    score_.push_back(beta);
+    return beta;
   }
 }
 
