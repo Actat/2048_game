@@ -30,7 +30,7 @@ int game_tree_node::best_move(int const depth, time_keeper const &tk) {
       return -1;
     }
 
-    if (s > best_score) {
+    if (s >= best_score) {
       best_move  = child->get_move();
       best_score = s;
     }
@@ -67,14 +67,14 @@ int game_tree_node::get_eval_score(int const depth, time_keeper const &tk) {
         return score_.at(0);
       }
 
-      if (s > best) {
+      if (s >= best) {
         best = s;
       }
     }
     score_.push_back(best);
     return best;
   } else {
-    int sum = 0;
+    int worst = std::numeric_limits<int>::max();
     for (auto child : children_) {
       int const s = child->get_eval_score(depth - 1, tk);
 
@@ -82,11 +82,12 @@ int game_tree_node::get_eval_score(int const depth, time_keeper const &tk) {
         return score_.at(0);
       }
 
-      sum += s;
+      if (s <= worst) {
+        worst = s;
+      }
     }
-    auto average = sum / children_.size();
-    score_.push_back(average);
-    return average;
+    score_.push_back(worst);
+    return worst;
   }
 }
 
