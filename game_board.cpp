@@ -8,8 +8,9 @@ game_board::game_board() {
 }
 
 game_board::game_board(game_board const &board) {
-  score_ = board.score_;
-  turn_  = board.turn_;
+  score_    = board.score_;
+  turn_     = board.turn_;
+  tile_sum_ = board.tile_sum_;
   std::copy(board.board_.begin(), board.board_.end(), board_.begin());
 }
 

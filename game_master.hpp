@@ -22,7 +22,7 @@ public:
   std::function<void(game_board const &)> on_turn_finished;
   std::function<void(game_board const &)> on_game_terminated;
 
-  std::tuple<game_board> game(player const &player);
+  std::tuple<game_board> game(player &player);
 };
 
 #endif  // GAME_MASTER_HPP

@@ -49,6 +49,14 @@ public:
       std::array<int, BOARD_SIZE> array);
 
   friend std::ostream &operator<<(std::ostream &os, const game_board &board);
+  bool operator==(game_board const &rhs) const {
+    return score_ == rhs.score_ && turn_ == rhs.turn_ &&
+           tile_sum_ == rhs.tile_sum_ &&
+           std::equal(board_.cbegin(), board_.cend(), rhs.board_.cbegin());
+  };
+  inline bool operator!=(game_board const &rhs) const {
+    return !(*this == rhs);
+  };
 };
 
 #endif  // GAME_BOARD_HPP

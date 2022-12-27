@@ -1,6 +1,6 @@
 #include "game_master.hpp"
 
-std::tuple<game_board> game_master::game(player const &player) {
+std::tuple<game_board> game_master::game(player &player) {
   std::random_device seed_gen;
   engine_ = std::mt19937(seed_gen());
 
