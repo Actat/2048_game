@@ -3,7 +3,6 @@
 #include <random>
 #include "game_board.hpp"
 #include "game_board_eval.hpp"
-#include "player_console.hpp"
 #include "player_game_tree.hpp"
 #include "visualizer.hpp"
 
@@ -43,7 +42,6 @@ void Main() {
     return true;
   };
 
-  // auto p = player_console();
   auto p = PlayerGameTree();
 
   for (int i = 0; i < START_TILES; i++) {
