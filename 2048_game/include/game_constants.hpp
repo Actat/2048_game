@@ -1,6 +1,7 @@
 #ifndef GAME_CONSTANTS
 #define GAME_CONSTANTS
 
+#include <array>
 #include <chrono>
 
 static int const BOARD_SIZE  = 4;
