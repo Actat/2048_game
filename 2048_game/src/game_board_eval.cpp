@@ -1,6 +1,6 @@
 #include "../include/game_board_eval.hpp"
 
-int game_board_eval::evaluate(game_board const &board) const {
+int GameBoardEval::evaluate(GameBoard const &board) const {
   if (board.is_terminated()) {
     return 0;
   }
@@ -17,7 +17,7 @@ int game_board_eval::evaluate(game_board const &board) const {
   return evaluate_value;
 }
 
-int game_board_eval::evaluate_line_(std::array<int, BOARD_SIZE> &line) const {
+int GameBoardEval::evaluate_line_(std::array<int, BOARD_SIZE> &line) const {
   int monotonic    = 0;
   int largest_tile = 0;
   int trend_p      = 0;

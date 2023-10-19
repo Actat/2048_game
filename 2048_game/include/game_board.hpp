@@ -12,7 +12,7 @@
 #include "game_constants.hpp"
 #include "move.hpp"
 
-class game_board {
+class GameBoard {
 private:
   std::array<int, BOARD_SIZE * BOARD_SIZE> board_;
   int score_;
@@ -20,8 +20,8 @@ private:
   int tile_sum_;
 
 public:
-  game_board();
-  game_board(game_board const &board);
+  GameBoard();
+  GameBoard(GameBoard const &board);
 
   // for game master ----------------------------------------------------------
   bool add_tile(int position, int tile);
@@ -49,13 +49,13 @@ public:
   std::tuple<std::array<int, BOARD_SIZE>, int> move(
       std::array<int, BOARD_SIZE> array);
 
-  friend std::ostream &operator<<(std::ostream &os, const game_board &board);
-  bool operator==(game_board const &rhs) const {
+  friend std::ostream &operator<<(std::ostream &os, const GameBoard &board);
+  bool operator==(GameBoard const &rhs) const {
     return score_ == rhs.score_ && turn_ == rhs.turn_ &&
            tile_sum_ == rhs.tile_sum_ &&
            std::equal(board_.cbegin(), board_.cend(), rhs.board_.cbegin());
   };
-  inline bool operator!=(game_board const &rhs) const {
+  inline bool operator!=(GameBoard const &rhs) const {
     return !(*this == rhs);
   };
 };

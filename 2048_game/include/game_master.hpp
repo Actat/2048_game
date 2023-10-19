@@ -10,19 +10,19 @@
 #include "game_constants.hpp"
 #include "player.hpp"
 
-class game_master {
+class GameMaster {
 private:
-  game_board board_;
+  GameBoard board_;
   std::mt19937 engine_;
 
   bool add_random_tile_();
 
 public:
-  std::function<void(game_board const &)> on_game_start;
-  std::function<void(game_board const &)> on_turn_finished;
-  std::function<void(game_board const &)> on_game_terminated;
+  std::function<void(GameBoard const &)> on_game_start;
+  std::function<void(GameBoard const &)> on_turn_finished;
+  std::function<void(GameBoard const &)> on_game_terminated;
 
-  std::tuple<game_board> game(player &player);
+  std::tuple<GameBoard> game(Player &player);
 };
 
 #endif  // GAME_MASTER_HPP

@@ -11,13 +11,13 @@ static int const DIRECTION_D = 1;
 static int const DIRECTION_U = 2;
 static int const DIRECTION_R = 3;
 
-class time_keeper {
+class TimeKeeper {
 private:
   std::chrono::high_resolution_clock::time_point start_time_;
   int time_limit_ms_;
 
 public:
-  time_keeper(int const time_limit_ms) {
+  TimeKeeper(int const time_limit_ms) {
     start_time_    = std::chrono::high_resolution_clock::now();
     time_limit_ms_ = time_limit_ms;
   }
@@ -35,7 +35,7 @@ public:
   }
 };
 
-class hash_board_array {
+class HashBoardArray {
 public:
   size_t operator()(std::array<int, BOARD_SIZE * BOARD_SIZE> const &arr) const {
     const int C = 97;
@@ -47,7 +47,7 @@ public:
   }
 };
 
-class hash_line_array {
+class HashLineArray {
 public:
   size_t operator()(std::array<int, BOARD_SIZE> const &arr) const {
     const int C = 97;

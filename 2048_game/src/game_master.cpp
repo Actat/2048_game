@@ -1,10 +1,10 @@
 #include "../include/game_master.hpp"
 
-std::tuple<game_board> game_master::game(player &player) {
+std::tuple<GameBoard> GameMaster::game(Player &player) {
   std::random_device seed_gen;
   engine_ = std::mt19937(seed_gen());
 
-  board_ = game_board();
+  board_ = GameBoard();
   for (int i = 0; i < START_TILES; i++) {
     add_random_tile_();
   }
@@ -13,7 +13,7 @@ std::tuple<game_board> game_master::game(player &player) {
   }
 
   while (!board_.is_terminated()) {
-    game_board b  = board_;
+    GameBoard b   = board_;
     auto time_s   = std::chrono::system_clock::now();
     auto input    = player.play(b);
     auto time_e   = std::chrono::system_clock::now();
@@ -37,7 +37,7 @@ std::tuple<game_board> game_master::game(player &player) {
 
 // private --------------------------------------------------------------------
 
-bool game_master::add_random_tile_() {
+bool GameMaster::add_random_tile_() {
   auto blanks = board_.find_blank_tiles();
   if (blanks.size() == 0) {
     return false;

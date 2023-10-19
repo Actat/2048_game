@@ -5,13 +5,13 @@
 #include <chrono>
 #include "game_board.hpp"
 
-struct visualizer_data {
-  game_board &board;
+struct VisualizerData {
+  GameBoard &board;
   std::chrono::duration<int64_t, std::nano> &duration;
   int eval_score;
 };
 
-class visualizer {
+class Visualizer {
 private:
   s3d::Color COLOR_BG{187, 173, 160};
   s3d::Color COLOR_0{204, 192, 179};
@@ -34,23 +34,23 @@ private:
   s3d::Font FONT_L{25, s3d::Typeface::Bold};  // >= 1024 = 2^10
 
 public:
-  visualizer();
-  void draw(visualizer_data const &data,
+  Visualizer();
+  void draw(VisualizerData const &data,
             int pos_x,
             int pos_y,
             int size_x,
             int size_y);
-  void draw_board(game_board const &b, int pos_x, int pos_y, int size);
-  void draw_info(visualizer_data const &data,
+  void draw_board(GameBoard const &b, int pos_x, int pos_y, int size);
+  void draw_info(VisualizerData const &data,
                  int pos_x,
                  int pos_y,
                  int size_x,
                  int size_y);
 };
 
-visualizer::visualizer() {}
+Visualizer::Visualizer() {}
 
-void visualizer::draw(visualizer_data const &data,
+void Visualizer::draw(VisualizerData const &data,
                       int pos_x,
                       int pos_y,
                       int size_x,
@@ -66,7 +66,7 @@ void visualizer::draw(visualizer_data const &data,
   }
 }
 
-void visualizer::draw_board(game_board const &b,
+void Visualizer::draw_board(GameBoard const &b,
                             int pos_x,
                             int pos_y,
                             int size) {
@@ -152,7 +152,7 @@ void visualizer::draw_board(game_board const &b,
   }
 };
 
-void visualizer::draw_info(visualizer_data const &data,
+void Visualizer::draw_info(VisualizerData const &data,
                            int pos_x,
                            int pos_y,
                            int size_x,

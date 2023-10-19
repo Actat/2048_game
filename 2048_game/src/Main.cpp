@@ -8,28 +8,27 @@
 #include "visualizer.hpp"
 
 void Main() {
-  visualizer v;
+  Visualizer v;
   int scene_w = s3d::Scene::Width();
   int scene_h = s3d::Scene::Height();
 
-  auto eval = game_board_eval();
+  auto eval = GameBoardEval();
 
   std::random_device seed_gen;
   std::mt19937 engine_ = std::mt19937(seed_gen());
 
-  game_board board_ = game_board();
+  GameBoard board_ = GameBoard();
 
-  auto on_game_start = [&v, &scene_w, &scene_h](visualizer_data const &data) {
+  auto on_game_start = [&v, &scene_w, &scene_h](VisualizerData const &data) {
     v.draw(data, 0, 0, scene_w, scene_h);
   };
-  auto on_turn_finished = [&v, &scene_w,
-                           &scene_h](visualizer_data const &data) {
+  auto on_turn_finished = [&v, &scene_w, &scene_h](VisualizerData const &data) {
     v.draw(data, 0, 0, scene_w, scene_h);
   };
-  auto on_game_terminated = [](visualizer_data const &data) {
+  auto on_game_terminated = [](VisualizerData const &data) {
     std::cout << "Game terminated." << std::endl;
   };
-  auto add_random_tile = [&engine_](game_board &board_) {
+  auto add_random_tile = [&engine_](GameBoard &board_) {
     auto blanks = board_.find_blank_tiles();
     if (blanks.size() == 0) {
       return false;
@@ -45,13 +44,13 @@ void Main() {
   };
 
   // auto p = player_console();
-  auto p = player_game_tree();
+  auto p = PlayerGameTree();
 
   for (int i = 0; i < START_TILES; i++) {
     add_random_tile(board_);
   }
-  auto zero_sec      = std::chrono::nanoseconds(0);
-  visualizer_data d0 = {board_, zero_sec, 0};
+  auto zero_sec     = std::chrono::nanoseconds(0);
+  VisualizerData d0 = {board_, zero_sec, 0};
   on_game_start(d0);
 
   while (!board_.is_terminated() && s3d::System::Update()) {
@@ -66,11 +65,11 @@ void Main() {
       board_.move(input);
       add_random_tile(board_);
     }
-    visualizer_data d1 = {board_, duration, eval.evaluate(board_)};
+    VisualizerData d1 = {board_, duration, eval.evaluate(board_)};
     on_turn_finished(d1);
   }
 
-  visualizer_data d2 = {board_, zero_sec, eval.evaluate(board_)};
+  VisualizerData d2 = {board_, zero_sec, eval.evaluate(board_)};
   if (on_game_terminated) {
     on_game_terminated(d2);
   }

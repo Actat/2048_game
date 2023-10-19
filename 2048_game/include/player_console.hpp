@@ -6,15 +6,15 @@
 #include "game_board.hpp"
 #include "player.hpp"
 
-class player_console : public player {
+class PlayerConsole : public Player {
 private:
-  int get_input(game_board board) const;
+  int get_input(GameBoard board) const;
 
 public:
-  Move play(game_board const &board) override { return get_input(board); };
+  Move play(GameBoard const &board) override { return get_input(board); };
 };
 
-int player_console::get_input(game_board board) const {
+int PlayerConsole::get_input(GameBoard board) const {
   int direction;
   std::string str;
   while (true) {

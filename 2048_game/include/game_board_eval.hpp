@@ -6,12 +6,12 @@
 #include "game_board.hpp"
 #include "game_constants.hpp"
 
-class game_board_eval {
+class GameBoardEval {
 private:
   int evaluate_line_(std::array<int, BOARD_SIZE> &line) const;
 
 public:
-  int evaluate(game_board const &board) const;
+  int evaluate(GameBoard const &board) const;
 };
 
 #endif  // GAME_BOARD_EVAL_HPP

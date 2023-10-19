@@ -1,13 +1,13 @@
 #include "../include/game_board.hpp"
 
-game_board::game_board() {
+GameBoard::GameBoard() {
   board_.fill(0);
   score_    = 0;
   turn_     = 0;
   tile_sum_ = 0;
 }
 
-game_board::game_board(game_board const &board) {
+GameBoard::GameBoard(GameBoard const &board) {
   score_    = board.score_;
   turn_     = board.turn_;
   tile_sum_ = board.tile_sum_;
@@ -16,7 +16,7 @@ game_board::game_board(game_board const &board) {
 
 // for game master ------------------------------------------------------------
 
-bool game_board::add_tile(int position, int tile) {
+bool GameBoard::add_tile(int position, int tile) {
   if (position < 0 || position > BOARD_SIZE * BOARD_SIZE) {
     return false;
   }
@@ -28,7 +28,7 @@ bool game_board::add_tile(int position, int tile) {
   return true;
 }
 
-bool game_board::can_move(int direction) const {
+bool GameBoard::can_move(int direction) const {
   for (int i = 0; i < BOARD_SIZE; i++) {
     if (can_move(fetch_line(direction, i))) {
       return true;
@@ -37,7 +37,7 @@ bool game_board::can_move(int direction) const {
   return false;
 }
 
-std::vector<int> game_board::find_blank_tiles() const {
+std::vector<int> GameBoard::find_blank_tiles() const {
   std::vector<int> vec = {};
   for (std::size_t i = 0; i < board_.size(); i++) {
     if (board_.at(i) == 0) {
@@ -47,11 +47,11 @@ std::vector<int> game_board::find_blank_tiles() const {
   return vec;
 }
 
-bool game_board::is_terminated() const {
+bool GameBoard::is_terminated() const {
   return !is_move_available();
 }
 
-void game_board::move(Move m) {
+void GameBoard::move(Move m) {
   for (int index = 0; index < BOARD_SIZE; index++) {
     auto moved = move(fetch_line(m.direction(), index));
     auto array = std::get<0>(moved);
@@ -64,36 +64,36 @@ void game_board::move(Move m) {
 
 // for game player ------------------------------------------------------------
 
-std::array<int, BOARD_SIZE * BOARD_SIZE> const &game_board::get_board_array()
+std::array<int, BOARD_SIZE * BOARD_SIZE> const &GameBoard::get_board_array()
     const {
   return board_;
 }
 
-int game_board::get_largest_tile() const {
+int GameBoard::get_largest_tile() const {
   return *std::max_element(board_.begin(), board_.end());
 }
 
-int game_board::get_score() const {
+int GameBoard::get_score() const {
   return score_;
 }
 
-int game_board::get_tile_sum() const {
+int GameBoard::get_tile_sum() const {
   return tile_sum_;
 }
 
-int game_board::get_turn() const {
+int GameBoard::get_turn() const {
   return turn_;
 }
 
-bool game_board::is_blank(int position) const {
+bool GameBoard::is_blank(int position) const {
   return board_.at(position) == 0;
 }
 
-bool game_board::is_blank_tile_exists() const {
+bool GameBoard::is_blank_tile_exists() const {
   return find_blank_tiles().size() > 0;
 }
 
-bool game_board::is_match_available() const {
+bool GameBoard::is_match_available() const {
   for (int i = 0; i < (int)board_.size(); i++) {
     for (int direction = 0; direction < 4; direction++) {
       int neighbor = get_neighbor_index(i, direction);
@@ -106,15 +106,15 @@ bool game_board::is_match_available() const {
   return false;
 }
 
-bool game_board::is_move_available() const {
+bool GameBoard::is_move_available() const {
   return is_blank_tile_exists() || is_match_available();
 }
 
 // other methods --------------------------------------------------------------
 
-void game_board::apply_line(int direction,
-                            int index,
-                            std::array<int, BOARD_SIZE> array) {
+void GameBoard::apply_line(int direction,
+                           int index,
+                           std::array<int, BOARD_SIZE> array) {
   switch (direction) {
     case DIRECTION_L:
       for (int i = 0; i < BOARD_SIZE; i++) {
@@ -149,7 +149,7 @@ void game_board::apply_line(int direction,
   }
 }
 
-bool game_board::can_move(std::array<int, BOARD_SIZE> array) const {
+bool GameBoard::can_move(std::array<int, BOARD_SIZE> array) const {
   bool is_tile_included = false;
   for (int i = BOARD_SIZE - 1; i >= 0; i--) {
     if (array.at(i) == 0 && is_tile_included) {
@@ -165,8 +165,8 @@ bool game_board::can_move(std::array<int, BOARD_SIZE> array) const {
   return false;
 }
 
-std::array<int, BOARD_SIZE> game_board::fetch_line(int direction,
-                                                   int index) const {
+std::array<int, BOARD_SIZE> GameBoard::fetch_line(int direction,
+                                                  int index) const {
   std::array<int, BOARD_SIZE> arr;
   switch (direction) {
     case DIRECTION_L:
@@ -206,7 +206,7 @@ std::array<int, BOARD_SIZE> game_board::fetch_line(int direction,
   }
 }
 
-int game_board::get_neighbor_index(int index, int direction) const {
+int GameBoard::get_neighbor_index(int index, int direction) const {
   switch (direction) {
     case DIRECTION_L:
       return index % BOARD_SIZE == 0 ? -1 : index - 1;
@@ -229,7 +229,7 @@ int game_board::get_neighbor_index(int index, int direction) const {
   }
 }
 
-std::tuple<std::array<int, BOARD_SIZE>, int> game_board::move(
+std::tuple<std::array<int, BOARD_SIZE>, int> GameBoard::move(
     std::array<int, BOARD_SIZE> array) {
   int score = 0;
   std::array<int, BOARD_SIZE> result;
@@ -261,7 +261,7 @@ std::tuple<std::array<int, BOARD_SIZE>, int> game_board::move(
   return std::tie(result, score);
 }
 
-std::ostream &operator<<(std::ostream &os, const game_board &board) {
+std::ostream &operator<<(std::ostream &os, const GameBoard &board) {
   os << "score: " << board.score_ << std::endl;
   for (int i = 0; i < BOARD_SIZE; i++) {
     for (int j = 0; j < BOARD_SIZE; j++) {

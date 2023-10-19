@@ -11,52 +11,52 @@
 #include "game_board_eval.hpp"
 #include "player.hpp"
 
-class game_tree_node {
+class GameTreeNode {
 private:
-  game_board_eval eval_;
-  game_board board_;
+  GameBoardEval eval_;
+  GameBoard board_;
   std::vector<int> score_;
   bool is_player_turn_;
   int move_;
-  std::vector<std::shared_ptr<game_tree_node>> children_;
+  std::vector<std::shared_ptr<GameTreeNode>> children_;
 
   bool add_children_();
 
 public:
-  game_tree_node(game_board_eval const &e,
-                 game_board const &b,
+  GameTreeNode(GameBoardEval const &e,
+                 GameBoard const &b,
                  bool is_player_turn,
                  int move);
-  int best_move(int const depth, time_keeper const &tk);
-  game_board const get_board() const;
+  int best_move(int const depth, TimeKeeper const &tk);
+  GameBoard const get_board() const;
   int get_eval_score(int const depth,
-                     time_keeper const &tk,
+                     TimeKeeper const &tk,
                      int alpha,
                      int beta);
   int get_move() const;
-  std::shared_ptr<game_tree_node> find(game_board const &b) const;
+  std::shared_ptr<GameTreeNode> find(GameBoard const &b) const;
 };
 
-class game_tree {
+class GameTree {
 private:
-  game_board_eval eval_;
-  std::shared_ptr<game_tree_node> root_node_;
+  GameBoardEval eval_;
+  std::shared_ptr<GameTreeNode> root_node_;
 
 public:
-  game_tree();
-  int best_move(int const depth, time_keeper const &tk);
-  void update_root(game_board const &b);
+  GameTree();
+  int best_move(int const depth, TimeKeeper const &tk);
+  void update_root(GameBoard const &b);
 };
 
-class player_game_tree : public player {
+class PlayerGameTree : public Player {
 private:
-  game_tree tree_;
+  GameTree tree_;
 
-  int iterative_deeping_(game_board const &board, int time_limit_ms);
+  int iterative_deeping_(GameBoard const &board, int time_limit_ms);
 
 public:
-  player_game_tree();
-  Move play(game_board const &board) override {
+  PlayerGameTree();
+  Move play(GameBoard const &board) override {
     return iterative_deeping_(board, 500);
   };
 };
