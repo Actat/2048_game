@@ -10,6 +10,7 @@
 #include <tuple>
 #include <vector>
 #include "game_constants.hpp"
+#include "move.hpp"
 
 class game_board {
 private:
@@ -27,7 +28,7 @@ public:
   bool can_move(int direction) const;
   std::vector<int> find_blank_tiles() const;
   bool is_terminated() const;
-  void move(int direction);
+  void move(Move move);
 
   // for game player ----------------------------------------------------------
   std::array<int, BOARD_SIZE * BOARD_SIZE> const &get_board_array() const;

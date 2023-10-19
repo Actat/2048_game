@@ -56,7 +56,7 @@ private:
 
 public:
   player_game_tree();
-  int play(game_board const &board) override {
+  Move play(game_board const &board) override {
     return iterative_deeping_(board, 500);
   };
 };

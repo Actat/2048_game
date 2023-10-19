@@ -15,13 +15,13 @@ std::tuple<game_board> game_master::game(player &player) {
   while (!board_.is_terminated()) {
     game_board b  = board_;
     auto time_s   = std::chrono::system_clock::now();
-    int input     = player.play(b);
+    auto input    = player.play(b);
     auto time_e   = std::chrono::system_clock::now();
     auto duration = time_e - time_s;
     auto msec =
         std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
     std::cout << "Player takes " << msec << " ms." << std::endl;
-    if (board_.can_move(input)) {
+    if (board_.can_move(input.direction())) {
       board_.move(input);
       add_random_tile_();
     }

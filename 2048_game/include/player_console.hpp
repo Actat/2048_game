@@ -11,7 +11,7 @@ private:
   int get_input(game_board board) const;
 
 public:
-  int play(game_board const &board) override { return get_input(board); };
+  Move play(game_board const &board) override { return get_input(board); };
 };
 
 int player_console::get_input(game_board board) const {

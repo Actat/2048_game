@@ -51,12 +51,12 @@ bool game_board::is_terminated() const {
   return !is_move_available();
 }
 
-void game_board::move(int direction) {
+void game_board::move(Move m) {
   for (int index = 0; index < BOARD_SIZE; index++) {
-    auto moved = move(fetch_line(direction, index));
+    auto moved = move(fetch_line(m.direction(), index));
     auto array = std::get<0>(moved);
     auto score = std::get<1>(moved);
-    apply_line(direction, index, array);
+    apply_line(m.direction(), index, array);
     score_ += score;
     turn_++;
   }

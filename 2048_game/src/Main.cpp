@@ -56,13 +56,13 @@ void Main() {
 
   while (!board_.is_terminated() && s3d::System::Update()) {
     auto time_s   = std::chrono::system_clock::now();
-    int input     = p.play(board_);
+    auto input    = p.play(board_);
     auto time_e   = std::chrono::system_clock::now();
     auto duration = time_e - time_s;
     auto msec =
         std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
     std::cout << "Player takes " << msec << " ms." << std::endl;
-    if (board_.can_move(input)) {
+    if (board_.can_move(input.direction())) {
       board_.move(input);
       add_random_tile(board_);
     }
